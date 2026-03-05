@@ -27,7 +27,6 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
         public RequestStatus EspecialidadInsertar(EspecialidadesDTO especialidad)
         {
             var parameter = new DynamicParameters();
-
             parameter.Add("@Nombre", especialidad.Nombre);
             parameter.Add("@Activo", especialidad.Activo);
 
@@ -35,16 +34,16 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-                db.Execute(
+                var result = db.QueryFirstOrDefault<RequestStatus>(
                     ScriptDatabase.SP_Especialidades_Insertar,
                     parameter,
                     commandType: CommandType.StoredProcedure
                 );
 
-                return new RequestStatus
+                return result ?? new RequestStatus
                 {
-                    CodeStatus = 1,
-                    MessageStatus = "Especialidad creada exitosamente"
+                    CodeStatus = 0,
+                    MessageStatus = "Error desconocido al insertar"
                 };
             }
             catch (Exception ex)

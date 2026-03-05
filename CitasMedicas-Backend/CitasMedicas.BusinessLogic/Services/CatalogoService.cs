@@ -36,6 +36,9 @@ namespace CitasMedicas.BusinessLogic.Services
                 case -1:
                     return result.Conflict(response.MessageStatus, response);
 
+                case -2:
+                return result.Conflict(response.MessageStatus, response);
+
                 case 0:
                     return result.Error(response.MessageStatus);
 
