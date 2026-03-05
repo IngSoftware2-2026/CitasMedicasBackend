@@ -24,12 +24,14 @@ namespace CitasMedicas.BusinessLogic
             services.AddScoped<EspecialidadesRepository>();
 
 
+
         }
 
         public static void BusinessLogic(this IServiceCollection services)
         {
-            services.AddScoped<CliniService>();
+            services.AddScoped<ClinicaService>();
             services.AddScoped<CatalogoService>();
+            services.AddScoped<AccesoService>();
         }
     }
 }

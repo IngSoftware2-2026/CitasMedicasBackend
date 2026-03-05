@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.BusinessLogic.Services
 {
-    public class CliniService
+    public class ClinicaService
     {
+        public ClinicaService()
+        {
+
+        }
     }
 }

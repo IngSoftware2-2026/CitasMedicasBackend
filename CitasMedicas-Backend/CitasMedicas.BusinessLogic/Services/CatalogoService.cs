@@ -121,5 +121,9 @@ namespace CitasMedicas.BusinessLogic.Services
             }
         }
         #endregion
+
+        #region Estados Cita
+
+        #endregion
     }
 }

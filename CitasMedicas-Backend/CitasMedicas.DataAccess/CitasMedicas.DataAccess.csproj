@@ -15,4 +15,8 @@
     <ProjectReference Include="..\CitasMedicas.Models\CitasMedicas.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\Clinica\" />
+  </ItemGroup>
+
 </Project>
