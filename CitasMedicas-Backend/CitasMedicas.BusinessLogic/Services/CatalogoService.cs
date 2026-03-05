@@ -1,4 +1,5 @@
-﻿using CitasMedicas.DataAccess.Repositories.Catalogos;
+﻿using CitasMedicas.DataAccess;
+using CitasMedicas.DataAccess.Repositories.Catalogos;
 using CitasMedicas.Models.Models;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,36 @@ namespace CitasMedicas.BusinessLogic.Services
         }
 
 
-        #region Especialidades
-
-        public ServiceResult ListarEspecialidades()
+        #region Método genérico de mapeo
+        private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
 
+            if (response == null)
+                return result.Error("La operación no devolvió resultados.");
+
+            switch (response.CodeStatus)
+            {
+                case 1:
+                    return result.Ok(response.MessageStatus, response);
+
+                case -1:
+                    return result.Conflict(response.MessageStatus, response);
+
+                case 0:
+                    return result.Error(response.MessageStatus);
+
+                default:
+                    return result.Error("Ocurrió un error desconocido.");
+            }
+        }
+        #endregion
+
+
+        #region Especialidades
+        public ServiceResult ListarEspecialidades()
+        {
+            var result = new ServiceResult();
             try
             {
                 var response = _especialidadesRepository.Listar();
@@ -32,87 +57,66 @@ namespace CitasMedicas.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                return result.Error(ex.Message);
+                return result.Error($"Error inesperado al listar especialidades: {ex.Message}");
             }
         }
 
-
         public ServiceResult EspecialidadesInsertar(EspecialidadesDTO especialidad)
         {
-            var result = new ServiceResult();
-
             if (especialidad == null)
-                return result.Error("Los datos de la especialidad son requeridos");
+                return new ServiceResult().BadRequest("Los datos de la especialidad son requeridos");
 
             if (string.IsNullOrWhiteSpace(especialidad.Nombre))
-                return result.Error("Nombre de la especialidad es requerido");
+                return new ServiceResult().BadRequest("Nombre de la especialidad es requerido");
 
             try
             {
                 var response = _especialidadesRepository.EspecialidadInsertar(especialidad);
-
-                if (response.CodeStatus == 1)
-                    return result.Ok(response);
-                else
-                    return result.Error(response);
+                return MapRequestStatusToServiceResult(response);
             }
             catch (Exception ex)
             {
-                return result.Error($"Unexpected error during Especialidad inserting: {ex.Message}");
+                return new ServiceResult().Error($"Error inesperado durante la inserción: {ex.Message}");
             }
         }
 
-
         public ServiceResult EspecialidadesEditar(EspecialidadesDTO especialidad)
         {
-            var result = new ServiceResult();
-
             if (especialidad == null)
-                return result.Error("Los datos de la especialidad son requeridos");
+                return new ServiceResult().BadRequest("Los datos de la especialidad son requeridos");
 
             if (especialidad.EspecialidadId <= 0)
-                return result.Error("El id de la especialidad es requerido");
+                return new ServiceResult().BadRequest("El id de la especialidad es requerido");
 
             if (string.IsNullOrWhiteSpace(especialidad.Nombre))
-                return result.Error("Nombre de la especialidad es requerido");
+                return new ServiceResult().BadRequest("Nombre de la especialidad es requerido");
 
             try
             {
                 var response = _especialidadesRepository.EspecialidadEditar(especialidad);
-
-                if (response.CodeStatus == 1)
-                    return result.Ok(response);
-                else
-                    return result.Error(response);
+                return MapRequestStatusToServiceResult(response);
             }
             catch (Exception ex)
             {
-                return result.Error($"Error inesperado al editar especialidad: {ex.Message}");
+                return new ServiceResult().Error($"Error inesperado durante la edición: {ex.Message}");
             }
         }
 
-
         public ServiceResult EspecialidadesEliminar(int especialidadId)
         {
-            var result = new ServiceResult();
-
             if (especialidadId <= 0)
-                return result.Error("El id de la especialidad es requerido");
+                return new ServiceResult().BadRequest("El id de la especialidad es requerido");
 
             try
             {
                 var response = _especialidadesRepository.EspecialidadEliminar(especialidadId);
-
-                return response.CodeStatus == 1
-                    ? result.Ok(response)
-                    : result.Error(response);
+                return MapRequestStatusToServiceResult(response);
             }
             catch (Exception ex)
             {
-                return result.Error($"Error inesperado durante la eliminación: {ex.Message}");
+                return new ServiceResult().Error($"Error inesperado durante la eliminación: {ex.Message}");
             }
         }
-
         #endregion
     }
 }
