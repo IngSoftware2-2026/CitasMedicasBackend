@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CitasMedicas.BusinessLogic\CitasMedicas.BusinessLogic.csproj" />
+    <ProjectReference Include="..\CitasMedicas.DataAccess\CitasMedicas.DataAccess.csproj" />
+    <ProjectReference Include="..\CitasMedicas.Models\CitasMedicas.Models.csproj" />
+  </ItemGroup>
+
+</Project>
