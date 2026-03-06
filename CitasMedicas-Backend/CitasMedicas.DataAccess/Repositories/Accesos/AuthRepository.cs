@@ -8,5 +8,7 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
 {
     public class AuthRepository
     {
+
+
     }
 }
