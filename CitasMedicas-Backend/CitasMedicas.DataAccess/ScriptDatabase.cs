@@ -1,7 +1,7 @@
 ﻿using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq;  
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +9,9 @@ namespace CitasMedicas.DataAccess
 {
     public class ScriptDatabase
     {
+        public static string SP_Doctores_Listar = "Clinica.sp_ObtenerDoctores";
+        public static string SP_Doctor_ObtenerPorId = "Clinica.sp_ObtenerDoctorPorId";
+
         #region Especialidades
         public static string SP_Especialidades_Listar = "Catalogos.SP_Especialidades_Listar";
         public static string SP_Especialidades_Insertar = "Catalogos.SP_Especialidades_Insertar";
