@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.Models.Models
 {
-    internal class UsuariosDTO
+    public class UsuariosDTO
     {
         public int UsuarioId { get; set; }
 

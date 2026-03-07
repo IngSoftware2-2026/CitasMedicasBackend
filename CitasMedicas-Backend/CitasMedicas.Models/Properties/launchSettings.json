@@ -1,7 +1,12 @@
 {
   "profiles": {
     "Perfil 1": {
-      "commandName": "Executable"
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\julio\\Desktop\\proyecto clase\\CitasMedicasBackend\\CitasMedicas-Backend\\CitasMedicas-Backend.sln"
+    },
+    "Perfil 2": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\julio\\Desktop\\proyecto clase\\CitasMedicasBackend\\CitasMedicas-Backend\\CitasMedicas-Backend.sln"
     }
   }
 }
