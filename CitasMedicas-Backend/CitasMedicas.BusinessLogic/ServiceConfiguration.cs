@@ -2,6 +2,7 @@
 using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
 using CitasMedicas.DataAccess.Repositories.Catalogos;
+using CitasMedicas.DataAccess.Repositories.Clinica;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace CitasMedicas.BusinessLogic
             
             services.AddScoped<AuthRepository>();
             services.AddScoped<EspecialidadesRepository>();
+            services.AddScoped<SolicitudesRepository>();
+
 
 
 
