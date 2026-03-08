@@ -1,5 +1,4 @@
-ï»¿using CitasMedicas.DataAccess;
-using CitasMedicas.DataAccess.Repositories.Catalogos;
+using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using System;
@@ -13,21 +12,21 @@ namespace CitasMedicas.BusinessLogic.Services
     public class ClinicaService
     {
         private readonly SolicitudesRepository _solicitudesRepository;
+        private readonly CitasRepository _citasRepository;
 
-
-        
-        public ClinicaService(SolicitudesRepository solicitudesRepository)
+        public ClinicaService(SolicitudesRepository solicitudesRepository, CitasRepository citasRepository)
         {
             _solicitudesRepository = solicitudesRepository;
+            _citasRepository = citasRepository;
         }
 
-        #region MÃ©todo genÃ©rico de mapeo
+        #region Método genérico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
 
             if (response == null)
-                return result.Error("La operaciÃ³n no devolviÃ³ resultados.");
+                return result.Error("La operación no devolvió resultados.");
 
             switch (response.CodeStatus)
             {
@@ -43,7 +42,7 @@ namespace CitasMedicas.BusinessLogic.Services
                     return result.Error(response.MessageStatus);
 
                 default:
-                    return result.Error("OcurriÃ³ un error desconocido.");
+                    return result.Error("Ocurrió un error desconocido.");
             }
         }
         #endregion
@@ -58,10 +57,10 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El nombre del paciente es requerido");
 
             if (string.IsNullOrWhiteSpace(solicitud.Telefono))
-                return new ServiceResult().BadRequest("El telÃ©fono es requerido");
+                return new ServiceResult().BadRequest("El teléfono es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un mÃ©dico");
+                return new ServiceResult().BadRequest("Debe seleccionar un médico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
@@ -78,7 +77,6 @@ namespace CitasMedicas.BusinessLogic.Services
             }
         }
 
-
         public ServiceResult SolicitudCitaInsertar(SolicitudesDTO solicitud)
         {
             if (solicitud == null)
@@ -88,13 +86,13 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un mÃ©dico");
+                return new ServiceResult().BadRequest("Debe seleccionar un médico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
 
             if (solicitud.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duraciÃ³n debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
 
             try
             {
@@ -105,6 +103,128 @@ namespace CitasMedicas.BusinessLogic.Services
             catch (Exception ex)
             {
                 return new ServiceResult().Error($"Error inesperado al crear la solicitud: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Citas
+        public ServiceResult CitaInsertar(CitasInsertarDTO cita)
+        {
+            if (cita == null)
+                return new ServiceResult().BadRequest("Los datos de la cita son requeridos");
+
+            if (cita.PacienteId <= 0)
+                return new ServiceResult().BadRequest("El paciente es requerido");
+
+            if (cita.MedicoId <= 0)
+                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+
+            if (cita.SalaId <= 0)
+                return new ServiceResult().BadRequest("Debe seleccionar una sala");
+
+            if (cita.Inicio == default)
+                return new ServiceResult().BadRequest("La fecha y hora de inicio son requeridas");
+
+            if (cita.Fin == default)
+                return new ServiceResult().BadRequest("La fecha y hora de fin son requeridas");
+
+            if (cita.DuracionMinutos <= 0)
+                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+
+            if (cita.Inicio >= cita.Fin)
+                return new ServiceResult().BadRequest("La fecha y hora de inicio debe ser menor que la fecha y hora de fin");
+
+            try
+            {
+                var response = _citasRepository.CitaInsertar(cita);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al crear la cita: {ex.Message}");
+            }
+        }
+
+        public ServiceResult CitasObtenerPorFiltro(CitasFiltroDTO filtro)
+        {
+            if (filtro == null)
+                return new ServiceResult().BadRequest("Los filtros son requeridos");
+
+            if (filtro.Desde.HasValue && filtro.Hasta.HasValue && filtro.Desde > filtro.Hasta)
+                return new ServiceResult().BadRequest("La fecha inicial no puede ser mayor a la fecha final");
+
+            try
+            {
+                var lista = _citasRepository.CitasObtenerPorFiltro(filtro);
+                return new ServiceResult().Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al obtener citas por filtro: {ex.Message}");
+            }
+        }
+
+        public ServiceResult CitaObtenerPorId(int citaId)
+        {
+            if (citaId <= 0)
+                return new ServiceResult().BadRequest("El id de la cita es requerido");
+
+            try
+            {
+                var detalle = _citasRepository.CitaObtenerPorId(citaId);
+
+                if (detalle == null)
+                    return new ServiceResult().NotFound("No se encontró la cita solicitada");
+
+                return new ServiceResult().Ok(detalle);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al obtener el detalle de la cita: {ex.Message}");
+            }
+        }
+
+        public ServiceResult CitaCambiarEstado(CitasCambiarEstadoDTO cambioEstado)
+        {
+            if (cambioEstado == null)
+                return new ServiceResult().BadRequest("Los datos para cambiar estado son requeridos");
+
+            if (cambioEstado.CitaId <= 0)
+                return new ServiceResult().BadRequest("El id de la cita es requerido");
+
+            if (string.IsNullOrWhiteSpace(cambioEstado.CodigoEstado))
+                return new ServiceResult().BadRequest("El código de estado es requerido");
+
+            try
+            {
+                var response = _citasRepository.CitaCambiarEstado(cambioEstado);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al cambiar el estado de la cita: {ex.Message}");
+            }
+        }
+
+        public ServiceResult CitaActualizarSala(CitasActualizarSalaDTO actualizacionSala)
+        {
+            if (actualizacionSala == null)
+                return new ServiceResult().BadRequest("Los datos para actualizar sala son requeridos");
+
+            if (actualizacionSala.CitaId <= 0)
+                return new ServiceResult().BadRequest("El id de la cita es requerido");
+
+            if (actualizacionSala.SalaId <= 0)
+                return new ServiceResult().BadRequest("El id de la sala es requerido");
+
+            try
+            {
+                var response = _citasRepository.CitaActualizarSala(actualizacionSala);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al actualizar la sala de la cita: {ex.Message}");
             }
         }
         #endregion
