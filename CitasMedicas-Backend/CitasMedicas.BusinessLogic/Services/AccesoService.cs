@@ -1,9 +1,13 @@
-﻿using CitasMedicas.DataAccess;
+﻿using CitasMedicas.BusinessLogic.Configuration;
+using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
 using CitasMedicas.Models.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,6 +23,76 @@ namespace CitasMedicas.BusinessLogic.Services
             _authRepository = authRepository;
             _userRepository = userRepository;
         }
+
+        #region Login
+        public ServiceResult Login(LoginRequest loginRequest)
+        {
+            if (loginRequest == null)
+                return new ServiceResult().BadRequest("Las credenciales son requeridas");
+
+            if (string.IsNullOrEmpty(loginRequest.NombreUsuario) || string.IsNullOrEmpty(loginRequest.Clave))
+                return new ServiceResult().BadRequest("Usuario y contraseña son requeridos");
+
+            try
+            {
+                var usuario = _authRepository.ValidarUsuario(loginRequest.NombreUsuario, loginRequest.Clave);
+
+                if (usuario == null)
+                    return new ServiceResult().Unauthorized("Usuario o contraseña incorrectos");
+
+                if (!usuario.Activo)
+                    return new ServiceResult().Unauthorized("Usuario inactivo");
+
+                var token = GenerateJwtToken(usuario);
+
+                var roles = _authRepository.Listar();
+                var rol = roles.FirstOrDefault(r => r.RolId == usuario.RolId);
+
+                var loginResponse = new LoginResponse
+                {
+                    UsuarioId = usuario.UsuarioId,
+                    NombreUsuario = usuario.NombreUsuario,
+                    Correo = usuario.Correo,
+                    Token = token,
+                    Rol = rol
+                };
+
+                return new ServiceResult().Ok("Login exitoso", loginResponse);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado durante el login: {ex.Message}");
+            }
+        }
+
+        private string GenerateJwtToken(UsuariosDTO usuario)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings.Key));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var roles = _authRepository.Listar();
+            var rol = roles.FirstOrDefault(r => r.RolId == usuario.RolId);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioId.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, usuario.NombreUsuario),
+                new Claim(ClaimTypes.Role, rol?.NombreRol ?? ""),
+                new Claim("RolId", usuario.RolId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: JwtSettings.Issuer,
+                audience: JwtSettings.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddHours(JwtSettings.ExpirationHours),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        #endregion
 
         #region Método genérico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)

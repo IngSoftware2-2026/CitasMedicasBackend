@@ -7,7 +7,7 @@ Proyecto backend para gestión de citas médicas (.NET 8, C# 12). API REST organ
 Estado actual
 
 - Rama activa para desarrollo: `julio` (ya creada y subida a `origin/julio`).
-- Compila correctamente después de cambios recientes (repositorios y controladores añadidos para `Accesos`).
+- Compila correctamente después de cambios recientes (repositorios y controladores añadidos para `Accesos`, incluyendo autenticación JWT).
 
 Estructura principal del repositorio
 
@@ -24,7 +24,7 @@ Estructura principal del repositorio
   - `RequestStatus.cs` — modelo de respuesta desde los procedimientos almacenados.
   - `CitasMedicasContext` (configuración de conexión centralizada).
 - `CitasMedicas.Models/` — DTOs usados entre capas.
-  - `UsuariosDTO.cs`, `RolDTO.cs`, etc.
+  - `UsuariosDTO.cs`, `RolDTO.cs`, `LoginRequest.cs`, `LoginResponse.cs`, etc.
 
 Puntos críticos (revisar antes de desplegar)
 
@@ -32,6 +32,7 @@ Puntos críticos (revisar antes de desplegar)
    - Asegurarse de que los SP listados en `ScriptDatabase.cs` existen en la base de datos y tienen la firma esperada:
      - `Accesos.SP_Roles_Listar`, `Accesos.SP_Roles_Insertar`, `Accesos.SP_Roles_Editar`, `Accesos.SP_Roles_Eliminar`
      - `Accesos.SP_Usuarios_Listar`, `Accesos.SP_Usuarios_Insertar`, `Accesos.SP_Usuarios_Editar`, `Accesos.SP_Usuarios_Eliminar`
+     - `Accesos.SP_Usuarios_Login` (requerido para autenticación JWT)
 
 2. Seguridad y manejo de contraseñas
    - `UsuariosDTO.ClaveHash` contiene el hash de la clave: nunca enviar/almacenar contraseñas en texto plano.
@@ -70,6 +71,9 @@ Cómo ejecutar en local
 
 Endpoints relevantes (resumen)
 
+- Autenticación
+  - `POST /Accesos/Login` (body: `LoginRequest`) — retorna token JWT con datos del usuario y rol
+
 - Roles
   - `GET  /Accesos/Roles/Listar`
   - `POST /Accesos/Roles/Insertar`  (body: `RolDTO`)
@@ -83,6 +87,9 @@ Endpoints relevantes (resumen)
   - `DELETE /Accesos/Usuarios/Eliminar?usuarioId={id}`
 
 Ejemplo rápido (curl)
+
+- Login:
+  - `curl -X POST -H "Content-Type: application/json" -H "XApiKey: <tu_apikey>" -d "{\"nombreUsuario\":\"admin\",\"clave\":\"password123\"}" https://localhost:5001/Accesos/Login`
 
 - Listar roles:
   - `curl -H "XApiKey: <tu_apikey>" https://localhost:5001/Accesos/Roles/Listar`
@@ -104,5 +111,5 @@ Contacto / Notas finales
 
 - Esta README es una guía técnica rápida para subir el repositorio y desplegar localmente. Ajustar las secciones de configuración y seguridad según políticas de la organización.
 
-- Archivo principal para revisar cambios recientes: `CitasMedicas.BusinessLogic/ServiceConfiguration.cs` (registro DI) y `CitasMedicas.API/Controllers/Accesos/AccesosController.cs` (endpoints añadidos).
+- Archivo principal para revisar cambios recientes: `CitasMedicas.BusinessLogic/Services/AccesoService.cs` (lógica de login JWT), `CitasMedicas.Models/Models/LoginRequest.cs`, `LoginResponse.cs` (DTOs de autenticación).
 

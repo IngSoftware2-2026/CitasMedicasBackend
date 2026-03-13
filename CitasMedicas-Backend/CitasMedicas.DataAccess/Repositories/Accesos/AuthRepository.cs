@@ -13,6 +13,30 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
 {
     public class AuthRepository
     {
+        public UsuariosDTO ValidarUsuario(string nombreUsuario, string clave)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@NombreUsuario", nombreUsuario);
+            parameter.Add("@Clave", clave);
+
+            try
+            {
+                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+
+                var result = db.QueryFirstOrDefault<UsuariosDTO>(
+                    ScriptDatabase.SP_Usuarios_Login,
+                    parameter,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public IEnumerable<RolDTO> Listar()
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);

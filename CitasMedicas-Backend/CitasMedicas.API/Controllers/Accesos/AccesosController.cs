@@ -15,6 +15,13 @@ namespace CitasMedicas.API.Controllers.Accesos
             _accesoService = accesoService ?? throw new ArgumentNullException(nameof(accesoService));
         }
 
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] LoginRequest loginRequest)
+        {
+            var result = _accesoService.Login(loginRequest);
+            return StatusCode(result.Code, result);
+        }
+
         #region Roles
         [HttpGet("Roles/Listar")]
         public IActionResult ListarRoles()
