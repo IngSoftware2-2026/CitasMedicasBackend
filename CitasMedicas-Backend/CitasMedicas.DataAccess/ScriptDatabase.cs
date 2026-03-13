@@ -21,5 +21,11 @@ namespace CitasMedicas.DataAccess
         public static string SP_SolicitudesCita_Insertar = "Clinica.SP_SolicitudesCita_Insertar";
         #endregion
 
+        #region Propuestas Reprogramacion
+        public static string SP_CrearPropuestaReprogramacion = "Clinica.SP_CrearPropuestaReprogramacion";
+        public static string SP_AceptarPropuestaReprogramacion = "Clinica.SP_AceptarPropuestaReprogramacion";
+        public static string SP_RechazarPropuestaReprogramacion = "Clinica.SP_RechazarPropuestaReprogramacion";
+        #endregion
+
     }
 }

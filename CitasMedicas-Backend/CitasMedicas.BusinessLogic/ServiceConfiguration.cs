@@ -24,6 +24,7 @@ namespace CitasMedicas.BusinessLogic
             services.AddScoped<AuthRepository>();
             services.AddScoped<EspecialidadesRepository>();
             services.AddScoped<SolicitudesRepository>();
+            services.AddScoped<PropuestasReprogramacionRepository>();
 
 
 
