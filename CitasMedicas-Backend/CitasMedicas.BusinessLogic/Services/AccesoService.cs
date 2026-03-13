@@ -36,6 +36,7 @@ namespace CitasMedicas.BusinessLogic.Services
             try
             {
                 var usuario = _authRepository.ValidarUsuario(loginRequest.NombreUsuario, loginRequest.Clave);
+                Console.WriteLine($"[LOGIN] Usuario encontrado: {usuario?.NombreUsuario ?? "NULL"}");
 
                 if (usuario == null)
                     return new ServiceResult().Unauthorized("Usuario o contraseña incorrectos");
@@ -62,6 +63,22 @@ namespace CitasMedicas.BusinessLogic.Services
             catch (Exception ex)
             {
                 return new ServiceResult().Error($"Error inesperado durante el login: {ex.Message}");
+            }
+        }
+
+        public ServiceResult LoginDebug(LoginRequest loginRequest)
+        {
+            if (loginRequest == null)
+                return new ServiceResult().BadRequest("Las credenciales son requeridas");
+
+            try
+            {
+                var usuario = _authRepository.ValidarUsuario(loginRequest.NombreUsuario, loginRequest.Clave);
+                return new ServiceResult().Ok("Debug", usuario);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error: {ex.Message}");
             }
         }
 
@@ -94,7 +111,6 @@ namespace CitasMedicas.BusinessLogic.Services
         }
         #endregion
 
-        #region Método genérico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
@@ -120,7 +136,6 @@ namespace CitasMedicas.BusinessLogic.Services
                     return result.Error("Ocurrió un error desconocido.");
             }
         }
-        #endregion
 
         #region Roles
         public ServiceResult ListarRoles()

@@ -23,7 +23,45 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-                var result = db.QueryFirstOrDefault<UsuariosDTO>(
+                var result = db.QueryFirstOrDefault<dynamic>(
+                    ScriptDatabase.SP_Usuarios_Login,
+                    parameter,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                if (result == null)
+                    return null;
+
+                return new UsuariosDTO
+                {
+                    UsuarioId = (int)result.UsuarioId,
+                    NombreUsuario = result.NombreUsuario?.ToString(),
+                    Correo = result.Correo?.ToString(),
+                    Telefono = result.Telefono?.ToString(),
+                    Clave = result.ClaveHash?.ToString(),
+                    RolId = (int)result.RolId,
+                    Activo = (bool)result.Activo,
+                    FechaCreacion = (DateTime)result.FechaCreacion
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ValidarUsuario: {ex.Message}");
+                return null;
+            }
+        }
+
+        public dynamic ValidarUsuarioDebug(string nombreUsuario, string clave)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@NombreUsuario", nombreUsuario);
+            parameter.Add("@Clave", clave);
+
+            try
+            {
+                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+
+                var result = db.QueryFirstOrDefault<dynamic>(
                     ScriptDatabase.SP_Usuarios_Login,
                     parameter,
                     commandType: CommandType.StoredProcedure
@@ -33,7 +71,7 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
             }
             catch (Exception ex)
             {
-                return null;
+                return new { Error = ex.Message };
             }
         }
 

@@ -29,6 +29,8 @@ namespace CitasMedicas.DataAccess
         public static string SP_Usuarios_Insertar = "Accesos.SP_Usuarios_Insertar";
         public static string SP_Usuarios_Editar = "Accesos.SP_Usuarios_Editar";
         public static string SP_Usuarios_Eliminar = "Accesos.SP_Usuarios_Eliminar";
+
+
         public static string SP_Usuarios_Login = "Accesos.SP_Usuarios_Login";
         #endregion
 

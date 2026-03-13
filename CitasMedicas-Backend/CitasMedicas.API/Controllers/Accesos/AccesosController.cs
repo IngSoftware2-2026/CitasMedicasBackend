@@ -1,6 +1,7 @@
 using CitasMedicas.BusinessLogic.Services;
 using CitasMedicas.Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace CitasMedicas.API.Controllers.Accesos
 {
@@ -19,6 +20,13 @@ namespace CitasMedicas.API.Controllers.Accesos
         public IActionResult Login([FromBody] LoginRequest loginRequest)
         {
             var result = _accesoService.Login(loginRequest);
+            return StatusCode(result.Code, result);
+        }
+
+        [HttpPost("LoginDebug")]
+        public IActionResult LoginDebug([FromBody] LoginRequest loginRequest)
+        {
+            var result = _accesoService.LoginDebug(loginRequest);
             return StatusCode(result.Code, result);
         }
 
