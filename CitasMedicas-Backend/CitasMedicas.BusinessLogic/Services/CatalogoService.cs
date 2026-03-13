@@ -12,13 +12,15 @@ namespace CitasMedicas.BusinessLogic.Services
     public class CatalogoService
     {
         private readonly EspecialidadesRepository _especialidadesRepository;
+        private readonly SalasRepository _salasRepository;
 
-
-        public CatalogoService(EspecialidadesRepository especialidadesRepository)
+        public CatalogoService(
+            EspecialidadesRepository especialidadesRepository,
+            SalasRepository salasRepository)
         {
             _especialidadesRepository = especialidadesRepository;
+            _salasRepository = salasRepository;
         }
-
 
         #region Método genérico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
@@ -37,7 +39,7 @@ namespace CitasMedicas.BusinessLogic.Services
                     return result.Conflict(response.MessageStatus, response);
 
                 case -2:
-                return result.Conflict(response.MessageStatus, response);
+                    return result.Conflict(response.MessageStatus, response);
 
                 case 0:
                     return result.Error(response.MessageStatus);
@@ -47,7 +49,6 @@ namespace CitasMedicas.BusinessLogic.Services
             }
         }
         #endregion
-
 
         #region Especialidades
         public ServiceResult ListarEspecialidades()
@@ -120,6 +121,82 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().Error($"Error inesperado durante la eliminación: {ex.Message}");
             }
         }
+        #endregion
+
+        #region Salas
+
+        public ServiceResult ListarSalas()
+        {
+            var result = new ServiceResult();
+
+            try
+            {
+                var response = _salasRepository.Listar();
+                return result.Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return result.Error($"Error inesperado al listar salas: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SalaInsertar(SalasDTO sala)
+        {
+            if (sala == null)
+                return new ServiceResult().BadRequest("Los datos de la sala son requeridos");
+
+            if (string.IsNullOrWhiteSpace(sala.NombreSala))
+                return new ServiceResult().BadRequest("El nombre de la sala es requerido");
+
+            if (string.IsNullOrWhiteSpace(sala.CodigoSala))
+                return new ServiceResult().BadRequest("El código de la sala es requerido");
+
+            try
+            {
+                var response = _salasRepository.Crear(sala);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado durante la inserción: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SalaEditar(SalasDTO sala)
+        {
+            if (sala == null)
+                return new ServiceResult().BadRequest("Los datos de la sala son requeridos");
+
+            if (sala.SalaId <= 0)
+                return new ServiceResult().BadRequest("El id de la sala es requerido");
+
+            try
+            {
+                var response = _salasRepository.Editar(sala);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado durante la edición: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SalaCambiarEstado(int salaId)
+        {
+            if (salaId <= 0)
+                return new ServiceResult().BadRequest("El id de la sala es requerido");
+
+            try
+            {
+                var response = _salasRepository.CambiarEstado(salaId);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al cambiar estado: {ex.Message}");
+            }
+        }
+
         #endregion
 
         #region Estados Cita

@@ -28,6 +28,14 @@ namespace CitasMedicas.DataAccess
         public static string SP_Citas_CambiarEstado = "Clinica.SP_Citas_CambiarEstado";
         public static string SP_Citas_ActualizarSala = "Clinica.SP_Citas_ActualizarSala";
         #endregion
+        
+        #region Salas
 
+        public static string SP_Sala_Listar = "Catalogos.SP_Sala_Listar";
+        public static string SP_Sala_Crear = "Catalogos.SP_Sala_Crear";
+        public static string SP_Sala_Editar = "Catalogos.SP_Sala_Editar";
+        public static string SP_Sala_CambiarEstado = "Catalogos.SP_Sala_CambiarEstado";
+
+        #endregion
     }
 }
