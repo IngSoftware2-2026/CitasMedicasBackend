@@ -35,7 +35,11 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
                 commandType: CommandType.StoredProcedure
             );
 
-            return result;
+            return result ?? new RequestStatus
+        {
+            CodeStatus = 0,
+            MessageStatus = "No se obtuvo respuesta del procedimiento"
+        };
         }
 
         public RequestStatus Editar(SalasDTO sala)
@@ -55,7 +59,11 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
                 commandType: CommandType.StoredProcedure
             );
 
-            return result;
+            return result ?? new RequestStatus
+            {
+                CodeStatus = 0,
+                MessageStatus = "No se obtuvo respuesta del procedimiento"
+            };
         }
 
         public RequestStatus CambiarEstado(int salaId)
@@ -72,7 +80,11 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
                 commandType: CommandType.StoredProcedure
             );
 
-            return result;
+            return result ?? new RequestStatus
+            {
+                CodeStatus = 0,
+                MessageStatus = "No se obtuvo respuesta del procedimiento"
+            };
         }
     }
 }

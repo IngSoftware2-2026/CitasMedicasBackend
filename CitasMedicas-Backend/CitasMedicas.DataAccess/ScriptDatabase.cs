@@ -37,5 +37,12 @@ namespace CitasMedicas.DataAccess
         public static string SP_Sala_CambiarEstado = "Catalogos.SP_Sala_CambiarEstado";
 
         #endregion
+
+        #region Estados
+
+        public static string SP_EstadosCita_Listar = "Catalogos.SP_EstadosCita_Listar";
+        public static string SP_EstadosSolicitud_Listar = "Catalogos.SP_EstadosSolicitud_Listar";
+
+        #endregion
     }
 }
