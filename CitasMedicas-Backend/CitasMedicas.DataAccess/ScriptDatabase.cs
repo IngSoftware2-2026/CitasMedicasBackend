@@ -31,10 +31,10 @@ namespace CitasMedicas.DataAccess
         
         #region Salas
 
-        public static string SP_Sala_Listar = "Catalogos.SP_Sala_Listar";
-        public static string SP_Sala_Crear = "Catalogos.SP_Sala_Crear";
-        public static string SP_Sala_Editar = "Catalogos.SP_Sala_Editar";
-        public static string SP_Sala_CambiarEstado = "Catalogos.SP_Sala_CambiarEstado";
+        public static string SP_Sala_Listar = "Catalogos.SP_Salas_Listar";
+        public static string SP_Sala_Crear = "Catalogos.SP_Salas_Crear";
+        public static string SP_Sala_Editar = "Catalogos.SP_Salas_Editar";
+        public static string SP_Sala_CambiarEstado = "Catalogos.SP_Salas_CambiarEstado";
 
         #endregion
 
