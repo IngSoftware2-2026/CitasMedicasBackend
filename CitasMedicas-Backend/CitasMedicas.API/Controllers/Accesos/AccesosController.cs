@@ -39,7 +39,7 @@ namespace CitasMedicas.API.Controllers.Accesos
             return StatusCode(result.Code, result);
         }
 
-        [HttpPost("Roles/Editar")]
+        [HttpPut("Roles/Editar")]
         public IActionResult RolesEditar([FromBody] RolDTO rol)
         {
             var result = _accesoService.RolesEditar(rol);
@@ -69,7 +69,7 @@ namespace CitasMedicas.API.Controllers.Accesos
             return StatusCode(result.Code, result);
         }
 
-        [HttpPost("Usuarios/Editar")]
+        [HttpPut("Usuarios/Editar")]
         public IActionResult UsuariosEditar([FromBody] UsuariosDTO usuario)
         {
             var result = _accesoService.UsuariosEditar(usuario);
