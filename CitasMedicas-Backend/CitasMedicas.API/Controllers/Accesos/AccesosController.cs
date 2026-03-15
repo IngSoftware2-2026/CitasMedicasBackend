@@ -70,7 +70,7 @@ namespace CitasMedicas.API.Controllers.Accesos
         }
 
         [HttpPut("Usuarios/Editar")]
-        public IActionResult UsuariosEditar([FromBody] UsuariosDTO usuario)
+        public IActionResult UsuariosEditar([FromBody] UsuarioEditarDTO usuario)
         {
             var result = _accesoService.UsuariosEditar(usuario);
             return StatusCode(result.Code, result);

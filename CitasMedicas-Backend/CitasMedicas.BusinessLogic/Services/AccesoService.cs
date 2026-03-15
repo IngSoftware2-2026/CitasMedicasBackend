@@ -37,10 +37,10 @@ namespace CitasMedicas.BusinessLogic.Services
                 if (usuario == null)
                     return new ServiceResult().Unauthorized("Usuario o contraseña incorrectos");
 
-                if (!usuario.Activo)
+                if (!usuario.Activo ?? false)
                     return new ServiceResult().Unauthorized("Usuario inactivo");
 
-                var rol = _authRepository.Listar().FirstOrDefault(r => r.RolId == usuario.RolId);
+                var rol = _authRepository.Listar().FirstOrDefault(r => r.RolId == (usuario.RolId ?? 0));
 
                 return new ServiceResult().Ok("Login exitoso", new LoginResponse
                 {
@@ -118,8 +118,19 @@ namespace CitasMedicas.BusinessLogic.Services
         public ServiceResult UsuariosInsertar(UsuariosDTO usuario)
             => ValidateAndExecute(usuario, u => true, () => _userRepository.Insertar(usuario));
 
-        public ServiceResult UsuariosEditar(UsuariosDTO usuario)
-            => ValidateAndExecute(usuario, u => u?.UsuarioId > 0, () => _userRepository.Editar(usuario));
+        public ServiceResult UsuariosEditar(UsuarioEditarDTO usuario)
+        {
+            var usuarioDto = new UsuariosDTO
+            {
+                UsuarioId = usuario.UsuarioId,
+                NombreUsuario = usuario.NombreUsuario,
+                Correo = usuario.Correo,
+                Telefono = usuario.Telefono,
+                RolId = usuario.RolId,
+                Activo = usuario.Activo
+            };
+            return ValidateAndExecute(usuarioDto, u => u?.UsuarioId > 0, () => _userRepository.Editar(usuarioDto));
+        }
 
         public ServiceResult UsuariosEliminar(int usuarioId)
             => usuarioId > 0 ? MapRequestStatusToServiceResult(_userRepository.Eliminar(usuarioId))

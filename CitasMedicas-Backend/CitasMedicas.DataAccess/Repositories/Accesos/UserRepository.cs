@@ -61,31 +61,43 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
             }
         }
 
+        public UsuariosDTO? ObtenerPorId(int usuarioId)
+        {
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            return db.QueryFirstOrDefault<UsuariosDTO>(
+                "SELECT TOP 1 * FROM Accesos.tbUsuarios WHERE UsuarioId = @UsuarioId",
+                new { UsuarioId = usuarioId }
+            );
+        }
+
         public RequestStatus Editar(UsuariosDTO usuario)
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@UsuarioId", usuario.UsuarioId);
-            parameter.Add("@NombreUsuario", usuario.NombreUsuario);
-            parameter.Add("@Correo", usuario.Correo);
-            parameter.Add("@Telefono", usuario.Telefono);
-            parameter.Add("@Clave", usuario.ClaveHash, DbType.Binary);
-            parameter.Add("@RolId", usuario.RolId);
-            parameter.Add("@Activo", usuario.Activo);
-
             try
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-                var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Usuarios_Editar,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
+                string sql = @"UPDATE Accesos.tbUsuarios 
+                               SET NombreUsuario = @NombreUsuario, 
+                                   Correo = @Correo, 
+                                   Telefono = @Telefono, 
+                                   RolId = @RolId, 
+                                   Activo = @Activo
+                               WHERE UsuarioId = @UsuarioId";
 
-                return result ?? new RequestStatus
+                var rowsAffected = db.Execute(sql, new
                 {
-                    CodeStatus = 0,
-                    MessageStatus = "Error desconocido al actualizar"
+                    usuario.UsuarioId,
+                    usuario.NombreUsuario,
+                    usuario.Correo,
+                    usuario.Telefono,
+                    usuario.RolId,
+                    usuario.Activo
+                });
+
+                return new RequestStatus
+                {
+                    CodeStatus = rowsAffected > 0 ? 1 : 0,
+                    MessageStatus = rowsAffected > 0 ? "Usuario actualizado" : "No se encontró el usuario"
                 };
             }
             catch (Exception ex)
