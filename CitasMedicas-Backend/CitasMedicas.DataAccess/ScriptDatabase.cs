@@ -15,5 +15,13 @@ namespace CitasMedicas.DataAccess
         public static string SP_Especialidades_Editar = "Catalogos.SP_Especialidades_Editar";
         public static string SP_Especialidades_Eliminar = "Catalogos.SP_Especialidades_Eliminar";
         #endregion
+
+        #region Pacientes
+        public static string SP_Pacientes_Listar = "Clinica.SP_Pacientes_Listar";
+        public static string SP_Pacientes_ObtenerPorId = "Clinica.SP_Pacientes_ObtenerPorId";
+        public static string SP_Pacientes_Insertar = "Clinica.SP_Pacientes_Insertar";
+        public static string SP_Pacientes_Editar = "Clinica.SP_Pacientes_Editar";
+        public static string SP_Pacientes_Eliminar = "Clinica.SP_Pacientes_Eliminar";
+        #endregion
     }
 }
