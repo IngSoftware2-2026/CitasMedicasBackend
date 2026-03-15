@@ -25,7 +25,7 @@ namespace CitasMedicas.API.Controllers.Clinica
         [HttpGet("ObtenerPorId")]
         public IActionResult ObtenerPorId(int pacienteId)
         {
-            var result = _clinicaService.PacientesObtenerPorId(pacienteId);
+            var result = _clinicaService.ObtenerPacientePorId(pacienteId);
             return StatusCode(result.Code, result);
         }
 

@@ -61,18 +61,19 @@ namespace CitasMedicas.BusinessLogic.Services
             }
         }
 
-        public ServiceResult PacientesObtenerPorId(int pacienteId)
+        public ServiceResult ObtenerPacientePorId(int pacienteId)
         {
             if (pacienteId <= 0)
-                return new ServiceResult().BadRequest("El ID del paciente es requerido");
+                return new ServiceResult().BadRequest("El id del paciente debe ser mayor que cero.");
 
             try
             {
-                var response = _pacientesRepository.ObtenerPorId(pacienteId);
-                if (response == null)
-                    return new ServiceResult().NotFound($"No se encontró el paciente con ID {pacienteId}");
+                var paciente = _pacientesRepository.ObtenerPorId(pacienteId);
 
-                return new ServiceResult().Ok(response);
+                if (paciente == null)
+                    return new ServiceResult().NotFound("Paciente no encontrado.");
+
+                return new ServiceResult().Ok(paciente);
             }
             catch (Exception ex)
             {
