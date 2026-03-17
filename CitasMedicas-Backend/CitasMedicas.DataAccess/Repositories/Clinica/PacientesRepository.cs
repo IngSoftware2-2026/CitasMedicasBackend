@@ -1,12 +1,7 @@
 using CitasMedicas.Models.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CitasMedicas.DataAccess.Repositories.Clinica
 {
@@ -15,135 +10,75 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
         public IEnumerable<PacientesDTO> Listar()
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
-            var result = db.Query<PacientesDTO>(
+            return db.Query<PacientesDTO>(
                 ScriptDatabase.SP_Pacientes_Listar,
                 commandType: CommandType.StoredProcedure
-            ).ToList();
-
-            return result;
+            );
         }
 
         public PacientesDTO ObtenerPorId(int pacienteId)
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@PacienteId", pacienteId);
-
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@PacienteId", pacienteId, DbType.Int32);
 
             return db.QueryFirstOrDefault<PacientesDTO>(
                 ScriptDatabase.SP_Pacientes_ObtenerPorId,
-                parameter,
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public RequestStatus PacienteInsertar(PacientesDTO paciente)
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@UsuarioId", paciente.UsuarioId);
-            parameter.Add("@Nombres", paciente.Nombres);
-            parameter.Add("@Apellidos", paciente.Apellidos);
-            parameter.Add("@Telefono", paciente.Telefono);
-            parameter.Add("@Correo", paciente.Correo);
-            parameter.Add("@FechaNacimiento", paciente.FechaNacimiento);
-            parameter.Add("@NumeroIdentidad", paciente.NumeroIdentidad);
-            parameter.Add("@Activo", paciente.Activo);
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@UsuarioId", paciente.UsuarioId, DbType.Int32);
+            parameters.Add("@Nombres", paciente.Nombres, DbType.String);
+            parameters.Add("@Apellidos", paciente.Apellidos, DbType.String);
+            parameters.Add("@Telefono", paciente.Telefono, DbType.String);
+            parameters.Add("@Correo", paciente.Correo, DbType.String);
+            parameters.Add("@FechaNacimiento", paciente.FechaNacimiento, DbType.Date);
+            parameters.Add("@NumeroIdentidad", paciente.NumeroIdentidad, DbType.String);
 
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
-                var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Pacientes_Insertar,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
-
-                return result ?? new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = "Error desconocido al insertar"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = $"Error inesperado: {ex.Message}"
-                };
-            }
+            return db.QueryFirstOrDefault<RequestStatus>(
+                ScriptDatabase.SP_Pacientes_Insertar,
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public RequestStatus PacienteEditar(PacientesDTO paciente)
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@PacienteId", paciente.PacienteId);
-            parameter.Add("@UsuarioId", paciente.UsuarioId);
-            parameter.Add("@Nombres", paciente.Nombres);
-            parameter.Add("@Apellidos", paciente.Apellidos);
-            parameter.Add("@Telefono", paciente.Telefono);
-            parameter.Add("@Correo", paciente.Correo);
-            parameter.Add("@FechaNacimiento", paciente.FechaNacimiento);
-            parameter.Add("@NumeroIdentidad", paciente.NumeroIdentidad);
-            parameter.Add("@Activo", paciente.Activo);
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@PacienteId", paciente.PacienteId, DbType.Int32);
+            parameters.Add("@UsuarioId", paciente.UsuarioId, DbType.Int32);
+            parameters.Add("@Nombres", paciente.Nombres, DbType.String);
+            parameters.Add("@Apellidos", paciente.Apellidos, DbType.String);
+            parameters.Add("@Telefono", paciente.Telefono, DbType.String);
+            parameters.Add("@Correo", paciente.Correo, DbType.String);
+            parameters.Add("@FechaNacimiento", paciente.FechaNacimiento, DbType.Date);
+            parameters.Add("@NumeroIdentidad", paciente.NumeroIdentidad, DbType.String);
 
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
-                var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Pacientes_Editar,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
-
-                return result ?? new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = "Error desconocido al actualizar"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = $"Error inesperado: {ex.Message}"
-                };
-            }
+            return db.QueryFirstOrDefault<RequestStatus>(
+                ScriptDatabase.SP_Pacientes_Editar,
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public RequestStatus PacienteEliminar(int pacienteId)
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@PacienteId", pacienteId);
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            var parameters = new DynamicParameters();
+            parameters.Add("@PacienteId", pacienteId, DbType.Int32);
 
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
-                var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Pacientes_Eliminar,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
-
-                return result ?? new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = "Error desconocido al eliminar"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = $"Error inesperado: {ex.Message}"
-                };
-            }
+            return db.QueryFirstOrDefault<RequestStatus>(
+                ScriptDatabase.SP_Pacientes_Eliminar,
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
     }
 }
