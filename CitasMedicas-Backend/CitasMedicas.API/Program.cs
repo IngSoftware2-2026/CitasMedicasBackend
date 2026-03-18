@@ -8,6 +8,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CitasMedicas.BusinessLogic.Configuration;
+using CitasMedicas.BusinessLogic.Services;
+using CitasMedicas.DataAccess.Repositories.Catalogos;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
@@ -16,6 +18,10 @@ JwtSettings.Initialize(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton(connectionString);
 builder.Services.DataAccess(connectionString);
+builder.Services.AddScoped<EspecialidadesRepository>();
+builder.Services.AddScoped<SalasRepository>();
+builder.Services.AddScoped<EstadosRepository>();
+builder.Services.AddScoped<CatalogoService>();
 
 // Add services to the container.
 builder.Services.AddControllers()
