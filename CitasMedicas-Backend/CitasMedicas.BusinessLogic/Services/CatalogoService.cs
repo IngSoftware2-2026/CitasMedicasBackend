@@ -13,13 +13,16 @@ namespace CitasMedicas.BusinessLogic.Services
     {
         private readonly EspecialidadesRepository _especialidadesRepository;
         private readonly SalasRepository _salasRepository;
+        private readonly EstadosRepository _estadosRepository;
 
-        public CatalogoService(
+       public CatalogoService(
             EspecialidadesRepository especialidadesRepository,
-            SalasRepository salasRepository)
+            SalasRepository salasRepository,
+            EstadosRepository estadosRepository)
         {
             _especialidadesRepository = especialidadesRepository;
             _salasRepository = salasRepository;
+            _estadosRepository = estadosRepository;
         }
 
         #region Método genérico de mapeo
@@ -199,7 +202,36 @@ namespace CitasMedicas.BusinessLogic.Services
 
         #endregion
 
-        #region Estados Cita
+        #region Estados
+        public ServiceResult ListarEstadosCita()
+        {
+            var result = new ServiceResult();
+
+            try
+            {
+                var response = _estadosRepository.ListarEstadosCita();
+                return result.Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return result.Error($"Error al listar estados de cita: {ex.Message}");
+            }
+        }
+
+        public ServiceResult ListarEstadosSolicitud()
+        {
+            var result = new ServiceResult();
+
+            try
+            {
+                var response = _estadosRepository.ListarEstadosSolicitud();
+                return result.Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return result.Error($"Error al listar estados de solicitud: {ex.Message}");
+            }
+        }
 
         #endregion
     }

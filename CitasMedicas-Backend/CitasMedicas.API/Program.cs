@@ -8,6 +8,7 @@ using System.Text;
 using CitasMedicas.BusinessLogic.Configuration;
 using CitasMedicas.BusinessLogic.Services;
 using CitasMedicas.DataAccess.Repositories.Catalogos;
+using CitasMedicas.DataAccess.Repositories.Consultas;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
@@ -19,6 +20,7 @@ builder.Services.DataAccess(connectionString);
 builder.Services.AddScoped<EspecialidadesRepository>();
 builder.Services.AddScoped<SalasRepository>();
 builder.Services.AddScoped<ConsultasRepository>();
+builder.Services.AddScoped<EstadosRepository>();
 builder.Services.AddScoped<CatalogoService>();
 builder.Services.AddScoped<ConsultasService>();
 
