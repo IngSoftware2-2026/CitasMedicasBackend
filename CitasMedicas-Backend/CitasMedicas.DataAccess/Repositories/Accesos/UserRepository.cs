@@ -31,9 +31,8 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
             parameter.Add("@NombreUsuario", usuario.NombreUsuario);
             parameter.Add("@Correo", usuario.Correo);
             parameter.Add("@Telefono", usuario.Telefono);
-            parameter.Add("@Clave", usuario.ClaveHash, DbType.Binary);
+            parameter.Add("@Clave", System.Text.Encoding.UTF8.GetBytes(usuario.Clave ?? string.Empty), DbType.Binary);
             parameter.Add("@RolId", usuario.RolId);
-            parameter.Add("@Activo", usuario.Activo);
 
             try
             {
