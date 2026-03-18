@@ -62,6 +62,13 @@ namespace CitasMedicas.API.Controllers.Accesos
             return StatusCode(result.Code, result);
         }
 
+        [HttpGet("Usuarios/{usuarioId}")]
+        public IActionResult UsuariosObtenerPorId(int usuarioId)
+        {
+            var result = _accesoService.UsuariosObtenerPorId(usuarioId);
+            return StatusCode(result.Code, result);
+        }
+
         [HttpPost("Usuarios/Insertar")]
         public IActionResult UsuariosInsertar([FromBody] UsuariosDTO usuario)
         {

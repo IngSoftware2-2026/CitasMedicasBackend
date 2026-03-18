@@ -115,6 +115,22 @@ namespace CitasMedicas.BusinessLogic.Services
             catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
         }
 
+        public ServiceResult UsuariosObtenerPorId(int usuarioId)
+        {
+            if (usuarioId <= 0)
+                return new ServiceResult().BadRequest("El id del usuario es requerido");
+
+            try
+            {
+                var usuario = _userRepository.ObtenerPorId(usuarioId);
+                if (usuario == null)
+                    return new ServiceResult().NotFound("Usuario no encontrado");
+
+                return new ServiceResult().Ok("Usuario encontrado", usuario);
+            }
+            catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
+        }
+
         public ServiceResult UsuariosInsertar(UsuariosDTO usuario)
             => ValidateAndExecute(usuario, u => true, () => _userRepository.Insertar(usuario));
 
