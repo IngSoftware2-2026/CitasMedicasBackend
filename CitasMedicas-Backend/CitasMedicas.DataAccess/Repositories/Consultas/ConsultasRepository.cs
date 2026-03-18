@@ -53,7 +53,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
                 var result = db.QueryFirstOrDefault<RequestStatus>(
-                    "Clinica.sp_ActualizarConsulta",  ScriptDatabase.SP_Consulta_Actualizar,
+                    ScriptDatabase.SP_Consulta_Actualizar,
                     parameter,
                     commandType: CommandType.StoredProcedure
                 );
@@ -70,27 +70,27 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
         }
 
-        public ConsultaDetalleDTO ObtenerPorCita(int citaId)
+        public ConsultaDetalleDTO? ObtenerPorCita(int citaId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@CitaId", citaId);
 
+            
             try
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-                return db.QueryFirstOrDefault<ConsultaDetalleDTO>(
-                    "Clinica.sp_ObtenerConsultaPorCita", 
+
+                var result = db.QueryFirstOrDefault<ConsultaDetalleDTO>(
+                    ScriptDatabase.SP_Consulta_Obtener_PorCita,
                     parameter,
                     commandType: CommandType.StoredProcedure
                 );
+
+                return result;
             }
-            catch (Exception ex)
+            catch
             {
-                return new RequestStatus
-                {
-                    CodeStatus = 0,
-                    MessageStatus = $"Error inesperado: {ex.Message}"
-                };
+                return new ConsultaDetalleDTO();
             }
         }
 
@@ -103,10 +103,10 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
                 return db.Query<HistorialClinicoDTO>(
-                    "Clinica.sp_ObtenerConsultasPorPaciente", 
+                    ScriptDatabase.SP_Consulta_Obtener_PorPaciente, 
                     parameter,
                     commandType: CommandType.StoredProcedure
-                );
+                ).ToList();
             }
             catch (Exception)
             {

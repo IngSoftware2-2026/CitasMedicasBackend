@@ -40,7 +40,7 @@ namespace CitasMedicas.API.Controllers.Consultas
         [HttpGet("obtener-consulta")]
         public IActionResult ObtenerHistorial(int pacienteId)
         {
-            var result = _consultasService.ObtenerHistorialPaciente(pacienteId);
+            var result = _consultasService.HistorialObtenerPorPaciente(pacienteId);
             return StatusCode(result.Code, result);
         }
     }

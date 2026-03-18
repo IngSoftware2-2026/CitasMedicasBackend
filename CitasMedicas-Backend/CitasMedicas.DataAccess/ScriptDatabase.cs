@@ -35,16 +35,21 @@ namespace CitasMedicas.DataAccess
         public static string SP_Sala_Crear = "Catalogos.SP_Sala_Crear";
         public static string SP_Sala_Editar = "Catalogos.SP_Sala_Editar";
         public static string SP_Sala_CambiarEstado = "Catalogos.SP_Sala_CambiarEstado";
-        
-        public static string SP_Consulta_Crear = "sp_CrearConsulta"; 
-        public static string sp_ActualizarConsulta = "sp_ActualizarConsulta";
+        #endregion
 
+        #region Consultas
+        public static string SP_Consulta_Crear = "Clinica.sp_CrearConsulta"; 
+        public static string SP_Consulta_Actualizar = "Clinica.sp_ActualizarConsulta";
+        public static string SP_Consulta_Obtener_PorCita = "Clinica.sp_ObtenerConsultaPorCita";
+        public static string SP_Consulta_Obtener_PorPaciente = "Clinica.sp_ObtenerConsultasPorPaciente";
+       
         #endregion
 
         #region Estados
 
         public static string SP_EstadosCita_Listar = "Catalogos.SP_EstadosCita_Listar";
         public static string SP_EstadosSolicitud_Listar = "Catalogos.SP_EstadosSolicitud_Listar";
+
         #endregion
     }
 }

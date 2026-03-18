@@ -20,29 +20,29 @@ namespace CitasMedicas.BusinessLogic.Services
             _citasRepository = citasRepository;
         }
 
-        #region Método genérico de mapeo
+        #region Mï¿½todo genï¿½rico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
 
             if (response == null)
-                return result.Error("La operación no devolvió resultados.");
+                return result.Error("La operaciï¿½n no devolviï¿½ resultados.");
 
             switch (response.CodeStatus)
             {
                 case 1:
-                    return result.Ok(response.MessageStatus, response);
+                    return result.Ok(response.MessageStatus!, response);
 
                 case -2:
                 case -3:
                 case -4:
-                    return result.Conflict(response.MessageStatus, response);
+                    return result.Conflict(response.MessageStatus!, response);
 
                 case 0:
-                    return result.Error(response.MessageStatus);
+                    return result.Error(response.MessageStatus!);
 
                 default:
-                    return result.Error("Ocurrió un error desconocido.");
+                    return result.Error("Ocurriï¿½ un error desconocido.");
             }
         }
         #endregion
@@ -57,10 +57,10 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El nombre del paciente es requerido");
 
             if (string.IsNullOrWhiteSpace(solicitud.Telefono))
-                return new ServiceResult().BadRequest("El teléfono es requerido");
+                return new ServiceResult().BadRequest("El telï¿½fono es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
@@ -86,13 +86,13 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
 
             if (solicitud.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duraciï¿½n debe ser mayor a cero");
 
             try
             {
@@ -117,7 +117,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (cita.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (cita.SalaId <= 0)
                 return new ServiceResult().BadRequest("Debe seleccionar una sala");
@@ -129,7 +129,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("La fecha y hora de fin son requeridas");
 
             if (cita.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duraciï¿½n debe ser mayor a cero");
 
             if (cita.Inicio >= cita.Fin)
                 return new ServiceResult().BadRequest("La fecha y hora de inicio debe ser menor que la fecha y hora de fin");
@@ -174,7 +174,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 var detalle = _citasRepository.CitaObtenerPorId(citaId);
 
                 if (detalle == null)
-                    return new ServiceResult().NotFound("No se encontró la cita solicitada");
+                    return new ServiceResult().NotFound("No se encontrï¿½ la cita solicitada");
 
                 return new ServiceResult().Ok(detalle);
             }
@@ -193,7 +193,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El id de la cita es requerido");
 
             if (string.IsNullOrWhiteSpace(cambioEstado.CodigoEstado))
-                return new ServiceResult().BadRequest("El código de estado es requerido");
+                return new ServiceResult().BadRequest("El cï¿½digo de estado es requerido");
 
             try
             {

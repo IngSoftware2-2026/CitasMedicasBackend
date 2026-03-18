@@ -9,8 +9,8 @@ namespace CitasMedicas.DataAccess
     public class RequestStatus
     {
         public int CodeStatus { get; set; }
-        public string MessageStatus { get; set; }
+        public string? MessageStatus { get; set; }
 
-        public object Data { get; set; }
+        public object? Data { get; set; }
     }
 }

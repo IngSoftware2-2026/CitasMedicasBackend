@@ -30,10 +30,4 @@ namespace CitasMedicas.Models.Models
         public string? NombreMedico { get; set; }
         public string? Especialidad { get; set; }
     }
-
-    public class RequestStatus
-    {
-        public int CodeStatus { get; set; }
-        public string? MessageStatus { get; set; }
-    }
 }
