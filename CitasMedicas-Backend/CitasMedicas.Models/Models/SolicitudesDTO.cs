@@ -23,9 +23,9 @@ namespace CitasMedicas.Models.Models
 
     public class SolicitudesPublicasDTO
     {
-        public string NombrePaciente { get; set; }
+        public string? NombrePaciente { get; set; }
 
-        public string Telefono { get; set; }
+        public string? Telefono { get; set; }
 
         public string? Email { get; set; }
 

@@ -18,7 +18,9 @@ builder.Services.AddSingleton(connectionString);
 builder.Services.DataAccess(connectionString);
 builder.Services.AddScoped<EspecialidadesRepository>();
 builder.Services.AddScoped<SalasRepository>();
+builder.Services.AddScoped<ConsultasRepository>();
 builder.Services.AddScoped<CatalogoService>();
+builder.Services.AddScoped<ConsultasService>();
 
 // Add services to the container.
 

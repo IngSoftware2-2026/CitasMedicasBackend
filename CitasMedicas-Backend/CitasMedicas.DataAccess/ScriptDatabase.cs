@@ -35,6 +35,9 @@ namespace CitasMedicas.DataAccess
         public static string SP_Sala_Crear = "Catalogos.SP_Sala_Crear";
         public static string SP_Sala_Editar = "Catalogos.SP_Sala_Editar";
         public static string SP_Sala_CambiarEstado = "Catalogos.SP_Sala_CambiarEstado";
+        
+        public static string SP_Consulta_Crear = "sp_CrearConsulta"; 
+        public static string sp_ActualizarConsulta = "sp_ActualizarConsulta";
 
         #endregion
     }
