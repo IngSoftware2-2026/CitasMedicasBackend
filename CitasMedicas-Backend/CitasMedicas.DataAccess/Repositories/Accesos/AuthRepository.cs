@@ -41,7 +41,7 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
                     Clave = result.ClaveHash?.ToString(),
                     RolId = (int)result.RolId,
                     Activo = (bool)result.Activo,
-                    FechaCreacion = (DateTime)result.FechaCreacion
+                    FechaCreacion = result.FechaCreacion != null ? (DateTime)result.FechaCreacion : null
                 };
             }
             catch (Exception ex)
