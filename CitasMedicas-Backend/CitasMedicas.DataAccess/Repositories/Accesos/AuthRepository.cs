@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.DataAccess.Repositories.Accesos
 {
-    public class AuthRepository
+    public class AuthRepository : IAuthRepository
     {
         public UsuariosDTO ValidarUsuario(string nombreUsuario, string clave)
         {

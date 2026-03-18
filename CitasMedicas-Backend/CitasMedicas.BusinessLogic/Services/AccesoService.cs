@@ -11,10 +11,10 @@ namespace CitasMedicas.BusinessLogic.Services
 {
     public class AccesoService
     {
-        private readonly AuthRepository _authRepository;
-        private readonly UserRepository _userRepository;
+        private readonly IAuthRepository _authRepository;
+        private readonly IUserRepository _userRepository;
 
-        public AccesoService(AuthRepository authRepository, UserRepository userRepository)
+        public AccesoService(IAuthRepository authRepository, IUserRepository userRepository)
         {
             _authRepository = authRepository;
             _userRepository = userRepository;

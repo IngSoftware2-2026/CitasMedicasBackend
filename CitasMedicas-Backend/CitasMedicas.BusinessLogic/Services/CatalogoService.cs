@@ -11,10 +11,10 @@ namespace CitasMedicas.BusinessLogic.Services
 {
     public class CatalogoService
     {
-        private readonly EspecialidadesRepository _especialidadesRepository;
+        private readonly IEspecialidadesRepository _especialidadesRepository;
 
 
-        public CatalogoService(EspecialidadesRepository especialidadesRepository)
+        public CatalogoService(IEspecialidadesRepository especialidadesRepository)
         {
             _especialidadesRepository = especialidadesRepository;
         }

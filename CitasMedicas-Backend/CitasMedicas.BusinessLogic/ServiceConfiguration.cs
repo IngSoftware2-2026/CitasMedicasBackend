@@ -19,13 +19,9 @@ namespace CitasMedicas.BusinessLogic
             CitasMedicasContext.BuildConnectionString(connectionString);
 
             // Repositorios
-
-            services.AddScoped<AuthRepository>();
- 
-            services.AddScoped<UserRepository>();
-            services.AddScoped<EspecialidadesRepository>();
-
-
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IEspecialidadesRepository, EspecialidadesRepository>();
 
         }
 

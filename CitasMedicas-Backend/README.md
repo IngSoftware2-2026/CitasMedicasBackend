@@ -26,19 +26,89 @@ CitasMedicas-Backend/
 │   ├── Repositories/
 │   │   ├── Accesos/
 │   │   │   ├── AuthRepository.cs        → Login
-│   │   │   └── UserRepository.cs        → CRUD Usuarios
+│   │   │   ├── IAuthRepository.cs       → Interfaz para pruebas
+│   │   │   ├── UserRepository.cs        → CRUD Usuarios
+│   │   │   └── IUserRepository.cs       → Interfaz para pruebas
 │   │   └── Catalogos/
-│   │       └── EspecialidadesRepository.cs
+│   │       ├── EspecialidadesRepository.cs
+│   │       └── IEspecialidadesRepository.cs
 │   ├── CitasMedicasContext.cs
 │   └── ScriptDatabase.cs
 │
-└── CitasMedicas.Models/                 → Modelos/DTOs
-    └── Models/
-        ├── UsuariosDTO.cs
-        ├── RolDTO.cs
-        ├── LoginRequest.cs
-        └── LoginResponse.cs
+├── CitasMedicas.Models/                 → Modelos/DTOs
+│   └── Models/
+│       ├── UsuariosDTO.cs
+│       ├── RolDTO.cs
+│       ├── LoginRequest.cs
+│       └── LoginResponse.cs
+│
+└── CitasMedicas.Tests/                  → Pruebas Unitarias
+    ├── Documentation/
+    │   └── PRUEBAS_UNITARIAS.md         → Documentación de pruebas
+    ├── ServiceResultTests.cs            → 16 tests
+    ├── AccesoServiceTests.cs            → 18 tests
+    └── CatalogoServiceTests.cs          → 15 tests
 ```
+
+---
+
+## Pruebas Unitarias
+
+El proyecto incluye un conjunto completo de pruebas unitarias utilizando **xUnit** y **Moq**.
+
+### Ejecutar Pruebas
+
+```bash
+# Todas las pruebas
+dotnet test
+
+# Pruebas específicas
+dotnet test --filter "FullyQualifiedName~ServiceResultTests"
+dotnet test --filter "FullyQualifiedName~AccesoServiceTests"
+dotnet test --filter "FullyQualifiedName~CatalogoServiceTests"
+```
+
+### Cobertura de Pruebas
+
+| Archivo | Descripción | Tests |
+|---------|-------------|-------|
+| ServiceResultTests.cs | Pruebas de la clase ServiceResult | 16 |
+| AccesoServiceTests.cs | Pruebas del servicio de acceso/login | 18 |
+| CatalogoServiceTests.cs | Pruebas del servicio de catálogo | 15 |
+| **Total** | | **47** |
+
+### Detalles de Pruebas
+
+#### ServiceResultTests.cs
+Pruebas para la clase `ServiceResult`:
+- Constructor initialization
+- Ok() methods
+- Error() methods
+- BadRequest(), NotFound(), Unauthorized()
+- Conflict(), Info(), Warning()
+- Forbidden(), Disabled()
+- SetMessage()
+- Code property
+
+#### AccesoServiceTests.cs
+Pruebas para el servicio de acceso:
+- Login() - null request, empty credentials, invalid credentials, inactive user
+- LoginDebug()
+- ListarRoles()
+- RolesInsertar(), RolesEditar(), RolesEliminar()
+- ListarUsuarios()
+- UsuariosInsertar(), UsuariosEditar(), UsuariosEliminar()
+
+#### CatalogoServiceTests.cs
+Pruebas para el servicio de catálogo:
+- ListarEspecialidades()
+- EspecialidadesInsertar() - null, empty name, valid data, conflicts
+- EspecialidadesEditar() - null, zero ID, negative ID, empty name, valid data
+- EspecialidadesEliminar() - zero ID, negative ID, valid ID
+
+### Documentación
+
+Ver archivo `CitasMedicas.Tests/Documentation/PRUEBAS_UNITARIAS.md` para información detallada.
 
 ---
 

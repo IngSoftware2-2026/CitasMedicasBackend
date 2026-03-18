@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.DataAccess.Repositories.Accesos
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         public IEnumerable<UsuariosDTO> Listar()
         {

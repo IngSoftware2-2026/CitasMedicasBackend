@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.DataAccess.Repositories.Catalogos
 {
-    public class EspecialidadesRepository
+    public class EspecialidadesRepository : IEspecialidadesRepository
     {
         public IEnumerable<EspecialidadesDTO> Listar()
         {
