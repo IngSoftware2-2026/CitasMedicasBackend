@@ -1,4 +1,4 @@
-﻿using CitasMedicas.DataAccess;
+using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Catalogos;
 using CitasMedicas.Models.Models;
 using System;
@@ -11,14 +11,14 @@ namespace CitasMedicas.BusinessLogic.Services
 {
     public class CatalogoService
     {
-        private readonly EspecialidadesRepository _especialidadesRepository;
-        private readonly SalasRepository _salasRepository;
-        private readonly EstadosRepository _estadosRepository;
+        private readonly IEspecialidadesRepository _especialidadesRepository;
+        private readonly SalasRepository? _salasRepository;
+        private readonly EstadosRepository? _estadosRepository;
 
-       public CatalogoService(
-            EspecialidadesRepository especialidadesRepository,
-            SalasRepository salasRepository,
-            EstadosRepository estadosRepository)
+        public CatalogoService(
+            IEspecialidadesRepository especialidadesRepository,
+            SalasRepository? salasRepository = null,
+            EstadosRepository? estadosRepository = null)
         {
             _especialidadesRepository = especialidadesRepository;
             _salasRepository = salasRepository;
@@ -132,6 +132,9 @@ namespace CitasMedicas.BusinessLogic.Services
         {
             var result = new ServiceResult();
 
+            if (_salasRepository == null)
+                return result.Error("Repositorio de salas no disponible");
+
             try
             {
                 var response = _salasRepository.Listar();
@@ -156,7 +159,7 @@ namespace CitasMedicas.BusinessLogic.Services
 
             try
             {
-                var response = _salasRepository.Crear(sala);
+                var response = _salasRepository!.Crear(sala);
                 return MapRequestStatusToServiceResult(response);
             }
             catch (Exception ex)
@@ -175,7 +178,7 @@ namespace CitasMedicas.BusinessLogic.Services
 
             try
             {
-                var response = _salasRepository.Editar(sala);
+                var response = _salasRepository!.Editar(sala);
                 return MapRequestStatusToServiceResult(response);
             }
             catch (Exception ex)
@@ -191,7 +194,7 @@ namespace CitasMedicas.BusinessLogic.Services
 
             try
             {
-                var response = _salasRepository.CambiarEstado(salaId);
+                var response = _salasRepository!.CambiarEstado(salaId);
                 return MapRequestStatusToServiceResult(response);
             }
             catch (Exception ex)
@@ -207,6 +210,9 @@ namespace CitasMedicas.BusinessLogic.Services
         {
             var result = new ServiceResult();
 
+            if (_estadosRepository == null)
+                return result.Error("Repositorio de estados no disponible");
+
             try
             {
                 var response = _estadosRepository.ListarEstadosCita();
@@ -221,6 +227,9 @@ namespace CitasMedicas.BusinessLogic.Services
         public ServiceResult ListarEstadosSolicitud()
         {
             var result = new ServiceResult();
+
+            if (_estadosRepository == null)
+                return result.Error("Repositorio de estados no disponible");
 
             try
             {

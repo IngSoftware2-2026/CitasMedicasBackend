@@ -1,4 +1,5 @@
-﻿using CitasMedicas.BusinessLogic.Configuration;
+using CitasMedicas.BusinessLogic.Configuration;
+using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
 using CitasMedicas.Models.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -10,76 +11,176 @@ namespace CitasMedicas.BusinessLogic.Services
 {
     public class AccesoService
     {
-        private readonly AuthRepository _authRepository;
+        private readonly IAuthRepository _authRepository;
+        private readonly IUserRepository _userRepository;
 
-        public AccesoService(AuthRepository authRepository)
+        public AccesoService(IAuthRepository authRepository, IUserRepository userRepository)
         {
             _authRepository = authRepository;
+            _userRepository = userRepository;
         }
 
-        public ServiceResult Login(LoginDTO login)
+        #region Login
+        public ServiceResult Login(LoginRequest loginRequest)
         {
-            if (login == null)
-                return new ServiceResult().BadRequest("Los datos de login son requeridos.");
+            if (loginRequest == null)
+                return new ServiceResult().BadRequest("Las credenciales son requeridas");
 
-            if (string.IsNullOrWhiteSpace(login.NombreUsuario))
-                return new ServiceResult().BadRequest("El nombre de usuario es requerido.");
+            if (string.IsNullOrEmpty(loginRequest.NombreUsuario) || string.IsNullOrEmpty(loginRequest.Clave))
+                return new ServiceResult().BadRequest("Usuario y contraseña son requeridos");
 
-            if (string.IsNullOrWhiteSpace(login.Clave))
-                return new ServiceResult().BadRequest("La clave es requerida.");
-
-            try
+            return Execute(() =>
             {
-                var usuario = _authRepository.Login(login.NombreUsuario, login.Clave);
+                var usuario = _authRepository.ValidarUsuario(loginRequest.NombreUsuario, loginRequest.Clave);
+                Console.WriteLine($"[LOGIN] Usuario encontrado: {usuario?.NombreUsuario ?? "NULL"}");
 
                 if (usuario == null)
-                    return new ServiceResult().Unauthorized("Credenciales incorrectas.");
+                    return new ServiceResult().Unauthorized("Usuario o contraseña incorrectos");
 
-                if (!usuario.Activo)
-                    return new ServiceResult().Unauthorized("El usuario está inactivo.");
+                if (!usuario.Activo ?? false)
+                    return new ServiceResult().Unauthorized("Usuario inactivo");
 
-                var token = GenerarToken(usuario);
+                var rol = _authRepository.Listar().FirstOrDefault(r => r.RolId == (usuario.RolId ?? 0));
 
-                return new ServiceResult().Ok(new
+                return new ServiceResult().Ok("Login exitoso", new LoginResponse
                 {
-                    token,
-                    usuario.UsuarioId,
-                    usuario.NombreUsuario,
-                    usuario.Correo,
-                    usuario.RolId,
-                    usuario.CodigoRol,
-                    usuario.NombreRol
+                    UsuarioId = usuario.UsuarioId,
+                    NombreUsuario = usuario.NombreUsuario,
+                    Correo = usuario.Correo,
+                    Token = GenerateJwtToken(usuario, rol),
+                    Rol = rol
                 });
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResult().Error($"Error inesperado al iniciar sesión: {ex.Message}");
-            }
+            });
         }
 
-        private string GenerarToken(UsuarioDTO usuario)
+        public ServiceResult LoginDebug(LoginRequest loginRequest)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings.Key));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            if (loginRequest == null)
+                return new ServiceResult().BadRequest("Las credenciales son requeridas");
 
+            return Execute(() =>
+            {
+                var usuario = _authRepository.ValidarUsuario(loginRequest.NombreUsuario, loginRequest.Clave);
+                return new ServiceResult().Ok("Debug", usuario);
+            });
+        }
+
+        private string GenerateJwtToken(UsuariosDTO usuario, RolDTO rol)
+        {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioId.ToString()),
-                new Claim(ClaimTypes.Name, usuario.NombreUsuario),
-                new Claim(ClaimTypes.Email, usuario.Correo ?? ""),
-                new Claim(ClaimTypes.Role, usuario.CodigoRol ?? ""),
-                new Claim("RolId", usuario.RolId.ToString())
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioId.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, usuario.NombreUsuario),
+                new Claim(ClaimTypes.Role, rol?.NombreRol ?? ""),
+                new Claim("RolId", usuario.RolId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var token = new JwtSecurityToken(
                 issuer: JwtSettings.Issuer,
                 audience: JwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(JwtSettings.ExpirationHours),
-                signingCredentials: credentials
+                expires: DateTime.Now.AddHours(JwtSettings.ExpirationHours),
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings.Key)),
+                    SecurityAlgorithms.HmacSha256)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        #endregion
+
+        #region Roles
+        public ServiceResult ListarRoles()
+        {
+            try { return new ServiceResult().Ok(_authRepository.Listar()); }
+            catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
+        }
+
+        public ServiceResult RolesInsertar(RolDTO rol)
+            => ValidateAndExecute(rol, r => r?.RolId == 0, () => _authRepository.Insertar(rol));
+
+        public ServiceResult RolesEditar(RolDTO rol)
+            => ValidateAndExecute(rol, r => r?.RolId > 0, () => _authRepository.Editar(rol));
+
+        public ServiceResult RolesEliminar(int rolId)
+            => rolId > 0 ? MapRequestStatusToServiceResult(_authRepository.Eliminar(rolId))
+                         : new ServiceResult().BadRequest("El id del rol es requerido");
+        #endregion
+
+        #region Usuarios
+        public ServiceResult ListarUsuarios()
+        {
+            try { return new ServiceResult().Ok(_userRepository.Listar()); }
+            catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
+        }
+
+        public ServiceResult UsuariosObtenerPorId(int usuarioId)
+        {
+            if (usuarioId <= 0)
+                return new ServiceResult().BadRequest("El id del usuario es requerido");
+
+            try
+            {
+                var usuario = _userRepository.ObtenerPorId(usuarioId);
+                if (usuario == null)
+                    return new ServiceResult().NotFound("Usuario no encontrado");
+
+                return new ServiceResult().Ok("Usuario encontrado", usuario);
+            }
+            catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
+        }
+
+        public ServiceResult UsuariosInsertar(UsuariosDTO usuario)
+            => ValidateAndExecute(usuario, u => true, () => _userRepository.Insertar(usuario));
+
+        public ServiceResult UsuariosEditar(UsuarioEditarDTO usuario)
+        {
+            var usuarioDto = new UsuariosDTO
+            {
+                UsuarioId = usuario.UsuarioId,
+                NombreUsuario = usuario.NombreUsuario,
+                Correo = usuario.Correo,
+                Telefono = usuario.Telefono,
+                RolId = usuario.RolId,
+                Activo = usuario.Activo
+            };
+            return ValidateAndExecute(usuarioDto, u => u?.UsuarioId > 0, () => _userRepository.Editar(usuarioDto));
+        }
+
+        public ServiceResult UsuariosEliminar(int usuarioId)
+            => usuarioId > 0 ? MapRequestStatusToServiceResult(_userRepository.Eliminar(usuarioId))
+                            : new ServiceResult().BadRequest("El id del usuario es requerido");
+        #endregion
+
+        #region Helpers
+        private ServiceResult Execute(Func<ServiceResult> action)
+        {
+            try { return action(); }
+            catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
+        }
+
+        private ServiceResult ValidateAndExecute<T>(T obj, Func<T, bool> validate, Func<RequestStatus> action)
+        {
+            if (obj == null) return new ServiceResult().BadRequest("Los datos son requeridos");
+            if (!validate(obj)) return new ServiceResult().BadRequest("El id es requerido");
+
+            try { return MapRequestStatusToServiceResult(action()); }
+            catch (Exception ex) { return new ServiceResult().Error($"Error: {ex.Message}"); }
+        }
+
+        private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
+        {
+            if (response == null) return new ServiceResult().Error("La operación no devolvió resultados.");
+
+            return response.CodeStatus switch
+            {
+                1 => new ServiceResult().Ok(response.MessageStatus, response),
+                -1 or -2 => new ServiceResult().Conflict(response.MessageStatus, response),
+                0 => new ServiceResult().Error(response.MessageStatus),
+                _ => new ServiceResult().Error("Error desconocido.")
+            };
+        }
+        #endregion
     }
 }
