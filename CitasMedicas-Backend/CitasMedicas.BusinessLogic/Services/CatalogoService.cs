@@ -36,16 +36,16 @@ namespace CitasMedicas.BusinessLogic.Services
             switch (response.CodeStatus)
             {
                 case 1:
-                    return result.Ok(response.MessageStatus, response);
+                    return result.Ok(response.MessageStatus!, response);
 
                 case -1:
-                    return result.Conflict(response.MessageStatus, response);
+                    return result.Conflict(response.MessageStatus!, response);
 
                 case -2:
-                    return result.Conflict(response.MessageStatus, response);
+                    return result.Conflict(response.MessageStatus!, response);
 
                 case 0:
-                    return result.Error(response.MessageStatus);
+                    return result.Error(response.MessageStatus!);
 
                 default:
                     return result.Error("Ocurrió un error desconocido.");

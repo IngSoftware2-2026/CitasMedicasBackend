@@ -25,7 +25,7 @@ namespace CitasMedicas.BusinessLogic.Services
             _pacientesRepository = pacientesRepository;
         }
 
-        #region Mtodo genrico de mapeo
+        #region Método genérico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
@@ -36,7 +36,7 @@ namespace CitasMedicas.BusinessLogic.Services
             switch (response.CodeStatus)
             {
                 case 1:
-                    return result.Ok(response.MessageStatus, response);
+                    return result.Ok(response.MessageStatus!, response);
 
                 case -1:
                 case -2:
@@ -47,7 +47,7 @@ namespace CitasMedicas.BusinessLogic.Services
                     return result.Conflict(response.MessageStatus, response);
 
                 case 0:
-                    return result.Error(response.MessageStatus);
+                    return result.Error(response.MessageStatus!);
 
                 default:
                     return result.Error("Ocurrió un error desconocido.");
@@ -271,7 +271,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El id de la cita es requerido");
 
             if (string.IsNullOrWhiteSpace(cambioEstado.CodigoEstado))
-                return new ServiceResult().BadRequest("El c digo de estado es requerido");
+                return new ServiceResult().BadRequest("El código de estado es requerido");
 
             try
             {

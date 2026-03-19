@@ -1,8 +1,9 @@
-using CitasMedicas.BusinessLogic.Services;
+﻿using CitasMedicas.BusinessLogic.Services;
 using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
 using CitasMedicas.DataAccess.Repositories.Catalogos;
 using CitasMedicas.DataAccess.Repositories.Clinica;
+using CitasMedicas.DataAccess.Repositories.Consultas;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CitasMedicas.BusinessLogic
@@ -23,7 +24,7 @@ namespace CitasMedicas.BusinessLogic
             services.AddScoped<SolicitudesRepository>();
             services.AddScoped<PropuestasReprogramacionRepository>();
             services.AddScoped<CitasRepository>();
-            
+            services.AddScoped<ConsultasRepository>();
         }
 
         public static void BusinessLogic(this IServiceCollection services)
@@ -31,6 +32,7 @@ namespace CitasMedicas.BusinessLogic
             services.AddScoped<ClinicaService>();
             services.AddScoped<CatalogoService>();
             services.AddScoped<AccesoService>();
+            services.AddScoped<ConsultasService>();
         }
     }
 }

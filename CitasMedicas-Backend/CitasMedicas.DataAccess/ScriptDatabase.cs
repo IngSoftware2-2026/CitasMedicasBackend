@@ -61,10 +61,19 @@ namespace CitasMedicas.DataAccess
         #endregion
         
         #region Salas
-        public static string SP_Sala_Listar = "Catalogos.SP_Salas_Listar";
-        public static string SP_Sala_Crear = "Catalogos.SP_Salas_Crear";
-        public static string SP_Sala_Editar = "Catalogos.SP_Salas_Editar";
-        public static string SP_Sala_CambiarEstado = "Catalogos.SP_Salas_CambiarEstado";
+
+        public static string SP_Sala_Listar = "Catalogos.SP_Sala_Listar";
+        public static string SP_Sala_Crear = "Catalogos.SP_Sala_Crear";
+        public static string SP_Sala_Editar = "Catalogos.SP_Sala_Editar";
+        public static string SP_Sala_CambiarEstado = "Catalogos.SP_Sala_CambiarEstado";
+        #endregion
+
+        #region Consultas
+        public static string SP_Consulta_Crear = "Clinica.sp_CrearConsulta"; 
+        public static string SP_Consulta_Actualizar = "Clinica.sp_ActualizarConsulta";
+        public static string SP_Consulta_Obtener_PorCita = "Clinica.sp_ObtenerConsultaPorCita";
+        public static string SP_Consulta_Obtener_PorPaciente = "Clinica.sp_ObtenerConsultasPorPaciente";
+       
         #endregion
 
         #region Estados
