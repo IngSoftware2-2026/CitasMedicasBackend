@@ -26,6 +26,7 @@ namespace CitasMedicas.API.Controllers.Accesos
 
         #region Roles
         [HttpGet("Roles/Listar")]
+        [Tags("Roles")]
         public IActionResult ListarRoles()
         {
             var result = _accesoService.ListarRoles();
@@ -33,6 +34,7 @@ namespace CitasMedicas.API.Controllers.Accesos
         }
 
         [HttpPost("Roles/Insertar")]
+        [Tags("Roles")]
         public IActionResult RolesInsertar([FromBody] RolDTO rol)
         {
             var result = _accesoService.RolesInsertar(rol);
@@ -40,6 +42,7 @@ namespace CitasMedicas.API.Controllers.Accesos
         }
 
         [HttpPut("Roles/Editar")]
+        [Tags("Roles")]
         public IActionResult RolesEditar([FromBody] RolDTO rol)
         {
             var result = _accesoService.RolesEditar(rol);
@@ -47,6 +50,7 @@ namespace CitasMedicas.API.Controllers.Accesos
         }
 
         [HttpDelete("Roles/Eliminar")]
+        [Tags("Roles")]
         public IActionResult RolesEliminar(int rolId)
         {
             var result = _accesoService.RolesEliminar(rolId);
