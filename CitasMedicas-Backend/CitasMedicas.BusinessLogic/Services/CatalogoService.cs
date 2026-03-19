@@ -11,17 +11,23 @@ namespace CitasMedicas.BusinessLogic.Services
 {
     public class CatalogoService
     {
-        private readonly IEspecialidadesRepository _especialidadesRepository;
-        private readonly SalasRepository? _salasRepository;
-        private readonly EstadosRepository? _estadosRepository;
+        private readonly EspecialidadesRepository _especialidadesRepository;
+        private readonly SalasRepository _salasRepository;
+        private readonly PacientesRepository _pacientesRepository;
+        private readonly DoctoresRepository _doctoresRepository;
+        private readonly EstadosRepository _estadosRepository;
 
-        public CatalogoService(
-            IEspecialidadesRepository especialidadesRepository,
-            SalasRepository? salasRepository = null,
-            EstadosRepository? estadosRepository = null)
+       public CatalogoService(
+            EspecialidadesRepository especialidadesRepository,
+            SalasRepository salasRepository,
+            PacientesRepository pacientesRepository,
+            DoctoresRepository doctoresRepository,
+            EstadosRepository estadosRepository)
         {
             _especialidadesRepository = especialidadesRepository;
             _salasRepository = salasRepository;
+            _pacientesRepository = pacientesRepository;
+            _doctoresRepository = doctoresRepository;
             _estadosRepository = estadosRepository;
         }
 
@@ -124,6 +130,44 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().Error($"Error inesperado durante la eliminación: {ex.Message}");
             }
         }
+        #endregion
+
+        #region Pacientes
+
+        public ServiceResult ListarPacientes()
+        {
+            var result = new ServiceResult();
+
+            try
+            {
+                var response = _pacientesRepository.Listar();
+                return result.Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return result.Error($"Error inesperado al listar pacientes: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Doctores
+
+        public ServiceResult ListarDoctores()
+        {
+            var result = new ServiceResult();
+
+            try
+            {
+                var response = _doctoresRepository.Listar();
+                return result.Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return result.Error($"Error inesperado al listar doctores: {ex.Message}");
+            }
+        }
+
         #endregion
 
         #region Salas

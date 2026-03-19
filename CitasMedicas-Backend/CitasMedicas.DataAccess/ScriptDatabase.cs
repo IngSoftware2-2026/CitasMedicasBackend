@@ -76,6 +76,18 @@ namespace CitasMedicas.DataAccess
        
         #endregion
 
+        #region Pacientes
+
+        public static string SP_Pacientes_Listar = "Catalogos.SP_Pacientes_Listar";
+
+        #endregion
+
+        #region Doctores
+
+        public static string SP_Doctores_Listar = "Catalogos.SP_Doctores_Listar";
+
+        #endregion
+
         #region Estados
         public static string SP_EstadosCita_Listar = "Catalogos.SP_EstadosCita_Listar";
         public static string SP_EstadosSolicitud_Listar = "Catalogos.SP_EstadosSolicitud_Listar";
