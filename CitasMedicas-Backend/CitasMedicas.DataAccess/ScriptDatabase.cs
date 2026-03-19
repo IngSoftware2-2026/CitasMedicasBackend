@@ -104,5 +104,12 @@ namespace CitasMedicas.DataAccess
         #region Usuarios
         public static string SP_Usuarios_Login = "Accesos.SP_Usuarios_Login";
         #endregion
+
+        #region Horarios Doctor
+        public const string SP_HorariosDoctor_Obtener = "Clinica.SP_HorariosDoctor_Obtener";
+        public const string SP_HorariosDoctor_Crear = "Clinica.SP_HorariosDoctor_Crear";
+        public const string SP_HorariosDoctor_Actualizar = "Clinica.SP_HorariosDoctor_Actualizar";
+        public const string SP_HorariosDoctor_Eliminar = "Clinica.SP_HorariosDoctor_Eliminar";
+        #endregion
     }
 }
