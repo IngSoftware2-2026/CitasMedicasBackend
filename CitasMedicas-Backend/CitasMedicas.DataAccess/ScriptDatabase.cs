@@ -28,6 +28,11 @@ namespace CitasMedicas.DataAccess
         public static string SP_Citas_CambiarEstado = "Clinica.SP_Citas_CambiarEstado";
         public static string SP_Citas_ActualizarSala = "Clinica.SP_Citas_ActualizarSala";
         #endregion
-
+       #region Horarios Doctor
+        public const string SP_HorariosDoctor_Obtener = "Clini.SP_HorariosDoctor_Obtener";
+        public const string SP_HorariosDoctor_Crear = "Clini.SP_HorariosDoctor_Crear";
+        public const string SP_HorariosDoctor_Actualizar = "Clini.SP_HorariosDoctor_Actualizar";
+        public const string SP_HorariosDoctor_Eliminar = "Clini.SP_HorariosDoctor_Eliminar";
+        #endregion
     }
 }
