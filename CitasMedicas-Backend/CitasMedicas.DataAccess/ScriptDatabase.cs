@@ -36,19 +36,27 @@ namespace CitasMedicas.DataAccess
         #endregion
         
         #region Salas
-
         public static string SP_Sala_Listar = "Catalogos.SP_Salas_Listar";
         public static string SP_Sala_Crear = "Catalogos.SP_Salas_Crear";
         public static string SP_Sala_Editar = "Catalogos.SP_Salas_Editar";
         public static string SP_Sala_CambiarEstado = "Catalogos.SP_Salas_CambiarEstado";
-
         #endregion
 
         #region Estados
-
         public static string SP_EstadosCita_Listar = "Catalogos.SP_EstadosCita_Listar";
         public static string SP_EstadosSolicitud_Listar = "Catalogos.SP_EstadosSolicitud_Listar";
+        #endregion
 
+        #region Pacientes
+        public static string SP_Pacientes_Listar = "Clinica.SP_Pacientes_Listar";
+        public static string SP_Pacientes_ObtenerPorId = "Clinica.SP_Pacientes_ObtenerPorId";
+        public static string SP_Pacientes_Insertar = "Clinica.SP_Pacientes_Insertar";
+        public static string SP_Pacientes_Editar = "Clinica.SP_Pacientes_Editar";
+        public static string SP_Pacientes_Eliminar = "Clinica.SP_Pacientes_Eliminar";
+        #endregion
+
+        #region Usuarios
+        public static string SP_Usuarios_Login = "Accesos.SP_Usuarios_Login";
         #endregion
     }
 }

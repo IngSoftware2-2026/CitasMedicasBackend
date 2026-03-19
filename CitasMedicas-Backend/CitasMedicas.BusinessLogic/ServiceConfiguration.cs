@@ -22,12 +22,9 @@ namespace CitasMedicas.BusinessLogic
             // Repositorios
             services.AddScoped<AuthRepository>();
             services.AddScoped<EspecialidadesRepository>();
+            services.AddScoped<PacientesRepository>();
             services.AddScoped<SolicitudesRepository>();
             services.AddScoped<PropuestasReprogramacionRepository>();
-
-
-
-
             services.AddScoped<CitasRepository>();
         }
 

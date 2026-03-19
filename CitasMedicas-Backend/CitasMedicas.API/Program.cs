@@ -74,7 +74,16 @@ builder.Services.AddSwaggerGen(options =>
         Name = "XApiKey",
         In = ParameterLocation.Header,
     });
-    var key = new OpenApiSecurityScheme()
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header. Ejemplo: Bearer {token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    var apiKey = new OpenApiSecurityScheme()
     {
         Reference = new OpenApiReference
         {
@@ -83,9 +92,18 @@ builder.Services.AddSwaggerGen(options =>
         },
         In = ParameterLocation.Header
     };
+    var bearer = new OpenApiSecurityScheme()
+    {
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
     var requirement = new OpenApiSecurityRequirement
     {
-        { key, new List<string>() }
+        { apiKey, new List<string>() },
+        { bearer, new List<string>() }
     };
     options.AddSecurityRequirement(requirement);
 });
