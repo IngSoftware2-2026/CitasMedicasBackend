@@ -12,21 +12,24 @@ namespace CitasMedicas.BusinessLogic.Services
     public class ClinicaService
     {
         private readonly SolicitudesRepository _solicitudesRepository;
+        private readonly PropuestasReprogramacionRepository _propuestasReprogramacionRepository;
         private readonly CitasRepository _citasRepository;
 
-        public ClinicaService(SolicitudesRepository solicitudesRepository, CitasRepository citasRepository)
+        
+        public ClinicaService(PropuestasReprogramacionRepository propuestasReprogramacionRepository, SolicitudesRepository solicitudesRepository)
         {
             _solicitudesRepository = solicitudesRepository;
+            _propuestasReprogramacionRepository = propuestasReprogramacionRepository;
             _citasRepository = citasRepository;
         }
 
-        #region Método genérico de mapeo
+        #region Mï¿½todo genï¿½rico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
 
             if (response == null)
-                return result.Error("La operación no devolvió resultados.");
+                return result.Error("La operaciï¿½n no devolviï¿½ resultados.");
 
             switch (response.CodeStatus)
             {
@@ -36,13 +39,15 @@ namespace CitasMedicas.BusinessLogic.Services
                 case -2:
                 case -3:
                 case -4:
+                case -5:
+                case -6:
                     return result.Conflict(response.MessageStatus, response);
 
                 case 0:
                     return result.Error(response.MessageStatus);
 
                 default:
-                    return result.Error("Ocurrió un error desconocido.");
+                    return result.Error("Ocurriï¿½ un error desconocido.");
             }
         }
         #endregion
@@ -57,10 +62,10 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El nombre del paciente es requerido");
 
             if (string.IsNullOrWhiteSpace(solicitud.Telefono))
-                return new ServiceResult().BadRequest("El teléfono es requerido");
+                return new ServiceResult().BadRequest("El telï¿½fono es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
@@ -86,13 +91,13 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
 
             if (solicitud.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duraciï¿½n debe ser mayor a cero");
 
             try
             {
@@ -107,6 +112,76 @@ namespace CitasMedicas.BusinessLogic.Services
         }
         #endregion
 
+        #region Propuestas reprogramacion
+        public ServiceResult CrearPropuestaReprogramacion(PropuestasReprogramacionDTO propuesta)
+        {
+            if (propuesta == null)
+                return new ServiceResult().BadRequest("Los datos de la propuesta son requeridos");
+
+            if (propuesta.SolicitudCitaId == null && propuesta.SolicitudPublicaId == null)
+                return new ServiceResult().BadRequest("Debe enviarse una solicitud vÃ¡lida");
+
+            if (propuesta.SolicitudCitaId != null && propuesta.SolicitudPublicaId != null)
+                return new ServiceResult().BadRequest("Solo puede enviarse un tipo de solicitud");
+
+            if (propuesta.OpcionInicio <= DateTime.Now)
+                return new ServiceResult().BadRequest("No se puede proponer un horario en el pasado");
+
+            if (propuesta.UsuarioProponeId <= 0)
+                return new ServiceResult().BadRequest("El usuario que propone es requerido");
+
+            try
+            {
+                var response = _propuestasReprogramacionRepository.CrearPropuesta(propuesta);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al crear la propuesta: {ex.Message}");
+            }
+        }
+
+        public ServiceResult AceptarPropuestaReprogramacion(AceptarPropuestaReprogramacionDTO propuesta)
+        {
+            if (propuesta == null)
+                return new ServiceResult().BadRequest("Los datos de la propuesta son requeridos");
+
+            if (propuesta.PropuestaId <= 0)
+                return new ServiceResult().BadRequest("El id de la propuesta es requerido");
+
+            if (propuesta.UsuarioId <= 0)
+                return new ServiceResult().BadRequest("El id del usuario es requerido");
+
+            try
+            {
+                var response = _propuestasReprogramacionRepository.AceptarPropuesta(propuesta);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al aceptar la propuesta: {ex.Message}");
+            }
+        }
+
+        public ServiceResult RechazarPropuestaReprogramacion(int propuestaId)
+        {
+            if (propuestaId <= 0)
+                return new ServiceResult().BadRequest("El id de la propuesta es requerido");
+
+            try
+            {
+                var response = _propuestasReprogramacionRepository.RechazarPropuesta(propuestaId);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al rechazar la propuesta: {ex.Message}");
+            }
+        }
+        #endregion
+
+
+
         #region Citas
         public ServiceResult CitaInsertar(CitasInsertarDTO cita)
         {
@@ -117,7 +192,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (cita.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un m dico");
 
             if (cita.SalaId <= 0)
                 return new ServiceResult().BadRequest("Debe seleccionar una sala");
@@ -129,7 +204,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("La fecha y hora de fin son requeridas");
 
             if (cita.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duraci n debe ser mayor a cero");
 
             if (cita.Inicio >= cita.Fin)
                 return new ServiceResult().BadRequest("La fecha y hora de inicio debe ser menor que la fecha y hora de fin");
@@ -174,7 +249,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 var detalle = _citasRepository.CitaObtenerPorId(citaId);
 
                 if (detalle == null)
-                    return new ServiceResult().NotFound("No se encontró la cita solicitada");
+                    return new ServiceResult().NotFound("No se encontr  la cita solicitada");
 
                 return new ServiceResult().Ok(detalle);
             }
@@ -193,7 +268,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El id de la cita es requerido");
 
             if (string.IsNullOrWhiteSpace(cambioEstado.CodigoEstado))
-                return new ServiceResult().BadRequest("El código de estado es requerido");
+                return new ServiceResult().BadRequest("El c digo de estado es requerido");
 
             try
             {

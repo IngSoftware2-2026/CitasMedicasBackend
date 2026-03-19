@@ -16,13 +16,18 @@ namespace CitasMedicas.BusinessLogic
     {
         public static void DataAccess(this IServiceCollection services, string connectionString)
         {
-            // Configura la cadena de conexión del context
+            // Configura la cadena de conexiï¿½n del context
             CitasMedicasContext.BuildConnectionString(connectionString);
 
             // Repositorios
             services.AddScoped<AuthRepository>();
             services.AddScoped<EspecialidadesRepository>();
             services.AddScoped<SolicitudesRepository>();
+            services.AddScoped<PropuestasReprogramacionRepository>();
+
+
+
+
             services.AddScoped<CitasRepository>();
         }
 
