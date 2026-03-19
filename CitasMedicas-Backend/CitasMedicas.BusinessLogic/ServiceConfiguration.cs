@@ -1,4 +1,4 @@
-﻿using CitasMedicas.BusinessLogic.Services;
+using CitasMedicas.BusinessLogic.Services;
 using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
 using CitasMedicas.DataAccess.Repositories.Catalogos;
@@ -16,11 +16,10 @@ namespace CitasMedicas.BusinessLogic
     {
         public static void DataAccess(this IServiceCollection services, string connectionString)
         {
-            // Configura la cadena de conexión del context
+            // Configura la cadena de conexi�n del context
             CitasMedicasContext.BuildConnectionString(connectionString);
 
             // Repositorios
-            
             services.AddScoped<AuthRepository>();
             services.AddScoped<EspecialidadesRepository>();
             services.AddScoped<SolicitudesRepository>();
@@ -29,6 +28,7 @@ namespace CitasMedicas.BusinessLogic
 
 
 
+            services.AddScoped<CitasRepository>();
         }
 
         public static void BusinessLogic(this IServiceCollection services)

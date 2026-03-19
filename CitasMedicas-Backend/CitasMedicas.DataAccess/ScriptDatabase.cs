@@ -1,4 +1,4 @@
-﻿using Microsoft.Identity.Client;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +25,14 @@ namespace CitasMedicas.DataAccess
         public static string SP_CrearPropuestaReprogramacion = "Clinica.SP_CrearPropuestaReprogramacion";
         public static string SP_AceptarPropuestaReprogramacion = "Clinica.SP_AceptarPropuestaReprogramacion";
         public static string SP_RechazarPropuestaReprogramacion = "Clinica.SP_RechazarPropuestaReprogramacion";
+        #endregion
+
+        #region Citas
+        public static string SP_Citas_Insertar = "Clinica.SP_Citas_Insertar";
+        public static string SP_Citas_ObtenerPorFiltro = "Clinica.SP_Citas_ObtenerPorFiltro";
+        public static string SP_Citas_ObtenerPorId = "Clinica.SP_Citas_ObtenerPorId";
+        public static string SP_Citas_CambiarEstado = "Clinica.SP_Citas_CambiarEstado";
+        public static string SP_Citas_ActualizarSala = "Clinica.SP_Citas_ActualizarSala";
         #endregion
 
     }
