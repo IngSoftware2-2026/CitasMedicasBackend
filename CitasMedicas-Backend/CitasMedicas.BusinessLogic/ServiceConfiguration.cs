@@ -25,6 +25,10 @@ namespace CitasMedicas.BusinessLogic
             services.AddScoped<PropuestasReprogramacionRepository>();
             services.AddScoped<CitasRepository>();
             services.AddScoped<ConsultasRepository>();
+            services.AddScoped<DoctoresRepository>();
+            services.AddScoped<PacientesRepository>();
+            services.AddScoped<EstadosRepository>();
+            services.AddScoped<HorariosDoctorRepository>();
         }
 
         public static void BusinessLogic(this IServiceCollection services)

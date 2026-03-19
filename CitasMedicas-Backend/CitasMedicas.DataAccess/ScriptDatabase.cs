@@ -9,14 +9,14 @@ namespace CitasMedicas.DataAccess
 {
     public class ScriptDatabase
     {
-        public static string SP_Doctores_Listar = "Clinica.sp_ObtenerDoctores";
-        public static string SP_Doctor_ObtenerPorId = "Clinica.sp_ObtenerDoctorPorId";
+        
 
         #region Especialidades
         public static string SP_Especialidades_Listar = "Catalogos.SP_Especialidades_Listar";
         public static string SP_Especialidades_Insertar = "Catalogos.SP_Especialidades_Insertar";
         public static string SP_Especialidades_Editar = "Catalogos.SP_Especialidades_Editar";
         public static string SP_Especialidades_Eliminar = "Catalogos.SP_Especialidades_Eliminar";
+        #endregion
 
 
 
@@ -39,7 +39,6 @@ namespace CitasMedicas.DataAccess
 
 
 
-        #endregion
 
         #region Solicitudes
         public static string SP_SolicitudesPublicas_Insertar = "Clinica.SP_SolicitudesPublicas_Insertar";
@@ -76,16 +75,11 @@ namespace CitasMedicas.DataAccess
        
         #endregion
 
-        #region Pacientes
-
-        public static string SP_Pacientes_Listar = "Catalogos.SP_Pacientes_Listar";
-
-        #endregion
 
         #region Doctores
 
         public static string SP_Doctores_Listar = "Catalogos.SP_Doctores_Listar";
-
+        public static string SP_Doctor_ObtenerPorId = "Clinica.sp_ObtenerDoctorPorId";
         #endregion
 
         #region Estados
@@ -101,9 +95,6 @@ namespace CitasMedicas.DataAccess
         public static string SP_Pacientes_Eliminar = "Clinica.SP_Pacientes_Eliminar";
         #endregion
 
-        #region Usuarios
-        public static string SP_Usuarios_Login = "Accesos.SP_Usuarios_Login";
-        #endregion
 
         #region Horarios Doctor
         public const string SP_HorariosDoctor_Obtener = "Clinica.SP_HorariosDoctor_Obtener";
