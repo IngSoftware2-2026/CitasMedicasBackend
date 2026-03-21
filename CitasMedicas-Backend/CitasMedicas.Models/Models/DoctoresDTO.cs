@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +23,9 @@ namespace CitasMedicas.Models.Models
         public int MinutosBuffer { get; set; }
 
         public bool Activo { get; set; }
+
+        // Campos opcionales que el SP puede retornar via JOIN
+        public string? NombreEspecialidad { get; set; }
+        public string? NombreSala { get; set; }
     }
 }
