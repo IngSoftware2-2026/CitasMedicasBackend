@@ -17,13 +17,36 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
                 EspecialidadId = especialidadId
             };
 
-            var result = db.Query<DoctoresDTO>(
+            var doctores = db.Query<DoctoresDTO>(
                 ScriptDatabase.SP_Doctores_Listar,
                 parametros,
                 commandType: CommandType.StoredProcedure
             ).ToList();
 
-            return result;
+            // Mapeamos las especialidades manualmente para ignorar si el SP trae o no la columna correcta
+            var sqlSpecs = @"
+                SELECT de.MedicoId, e.Nombre as NombreEspecialidad
+                FROM Clinica.tbDoctorEspecialidades de
+                INNER JOIN Catalogos.tbEspecialidades e ON e.EspecialidadId = de.EspecialidadId
+                ORDER BY de.Principal DESC, e.Nombre
+            ";
+            var todasEspecialidades = db.Query(sqlSpecs).ToList();
+
+            foreach (var doc in doctores)
+            {
+                var specsForDoc = todasEspecialidades
+                    .Where(s => s.MedicoId == doc.MedicoId)
+                    .Select(s => (string)s.NombreEspecialidad)
+                    .ToList();
+
+                if (specsForDoc.Any())
+                {
+                    // Unimos las especialidades con coma
+                    doc.NombreEspecialidad = string.Join(", ", specsForDoc);
+                }
+            }
+
+            return doctores;
         }
 
         public DoctoresDTO ObtenerPorId(int id)
@@ -40,6 +63,23 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
                 parametros,
                 commandType: CommandType.StoredProcedure
             );
+
+            if (result != null)
+            {
+                var sqlSpecs = @"
+                    SELECT e.Nombre as NombreEspecialidad
+                    FROM Clinica.tbDoctorEspecialidades de
+                    INNER JOIN Catalogos.tbEspecialidades e ON e.EspecialidadId = de.EspecialidadId
+                    WHERE de.MedicoId = @MedicoId
+                    ORDER BY de.Principal DESC, e.Nombre
+                ";
+                var specs = db.Query<string>(sqlSpecs, new { MedicoId = id }).ToList();
+
+                if (specs.Any())
+                {
+                    result.NombreEspecialidad = string.Join(", ", specs);
+                }
+            }
 
             return result;
         }
@@ -194,6 +234,22 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             ";
 
             return db.Query<DoctorEspecialidadDTO>(sql, new { MedicoId = medicoId }).ToList();
+        }
+        /// <summary>
+        /// Lista todas las salas activas.
+        /// </summary>
+        public IEnumerable<SalasDTO> ListarSalas()
+        {
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+
+            var sql = @"
+                SELECT SalaId, ISNULL(CodigoSala, '') as CodigoSala, NombreSala, ISNULL(Ubicacion, '') as Ubicacion, Activo 
+                FROM Catalogos.tbSalas 
+                WHERE Activo = 1
+                ORDER BY NombreSala
+            ";
+
+            return db.Query<SalasDTO>(sql).ToList();
         }
     }
 }

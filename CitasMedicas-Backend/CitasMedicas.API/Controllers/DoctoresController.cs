@@ -80,5 +80,16 @@ namespace CitasMedicas.API.Controllers
             _repo.SetEspecialidadPrincipal(id, especialidadId);
             return Ok();
         }
+
+        /// <summary>
+        /// Lista las salas activas.
+        /// Se ubica en este controller auxiliarmente para el formulario de doctores.
+        /// </summary>
+        [HttpGet("salas")]
+        public IActionResult ListarSalas()
+        {
+            var data = _repo.ListarSalas();
+            return Ok(data);
+        }
     }
 }
