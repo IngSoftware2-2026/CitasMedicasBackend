@@ -13,20 +13,22 @@ namespace CitasMedicas.BusinessLogic.Services
     {
         private readonly SolicitudesRepository _solicitudesRepository;
         private readonly CitasRepository _citasRepository;
+        private readonly HorariosDoctorRepository _horariosDoctorRepository;
 
         public ClinicaService(SolicitudesRepository solicitudesRepository, CitasRepository citasRepository)
         {
             _solicitudesRepository = solicitudesRepository;
             _citasRepository = citasRepository;
+            _horariosDoctorRepository = new HorariosDoctorRepository();
         }
 
-        #region Método genérico de mapeo
+        #region Mï¿½todo genï¿½rico de mapeo
         private ServiceResult MapRequestStatusToServiceResult(RequestStatus response)
         {
             var result = new ServiceResult();
 
             if (response == null)
-                return result.Error("La operación no devolvió resultados.");
+                return result.Error("La operaciï¿½n no devolviï¿½ resultados.");
 
             switch (response.CodeStatus)
             {
@@ -42,7 +44,7 @@ namespace CitasMedicas.BusinessLogic.Services
                     return result.Error(response.MessageStatus);
 
                 default:
-                    return result.Error("Ocurrió un error desconocido.");
+                    return result.Error("Ocurriï¿½ un error desconocido.");
             }
         }
         #endregion
@@ -57,10 +59,10 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El nombre del paciente es requerido");
 
             if (string.IsNullOrWhiteSpace(solicitud.Telefono))
-                return new ServiceResult().BadRequest("El teléfono es requerido");
+                return new ServiceResult().BadRequest("El telï¿½fono es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
@@ -86,13 +88,13 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (solicitud.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (solicitud.FechaHoraInicio == default)
                 return new ServiceResult().BadRequest("Debe seleccionar una fecha y hora");
 
             if (solicitud.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duraciï¿½n debe ser mayor a cero");
 
             try
             {
@@ -117,7 +119,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El paciente es requerido");
 
             if (cita.MedicoId <= 0)
-                return new ServiceResult().BadRequest("Debe seleccionar un médico");
+                return new ServiceResult().BadRequest("Debe seleccionar un mï¿½dico");
 
             if (cita.SalaId <= 0)
                 return new ServiceResult().BadRequest("Debe seleccionar una sala");
@@ -129,7 +131,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("La fecha y hora de fin son requeridas");
 
             if (cita.DuracionMinutos <= 0)
-                return new ServiceResult().BadRequest("La duración debe ser mayor a cero");
+                return new ServiceResult().BadRequest("La duraciï¿½n debe ser mayor a cero");
 
             if (cita.Inicio >= cita.Fin)
                 return new ServiceResult().BadRequest("La fecha y hora de inicio debe ser menor que la fecha y hora de fin");
@@ -174,7 +176,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 var detalle = _citasRepository.CitaObtenerPorId(citaId);
 
                 if (detalle == null)
-                    return new ServiceResult().NotFound("No se encontró la cita solicitada");
+                    return new ServiceResult().NotFound("No se encontrï¿½ la cita solicitada");
 
                 return new ServiceResult().Ok(detalle);
             }
@@ -193,7 +195,7 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().BadRequest("El id de la cita es requerido");
 
             if (string.IsNullOrWhiteSpace(cambioEstado.CodigoEstado))
-                return new ServiceResult().BadRequest("El código de estado es requerido");
+                return new ServiceResult().BadRequest("El cï¿½digo de estado es requerido");
 
             try
             {
@@ -228,5 +230,57 @@ namespace CitasMedicas.BusinessLogic.Services
             }
         }
         #endregion
-    }
+
+        #region Horarios Doctor
+        
+        public IEnumerable<HorarioDoctorDTO> ObtenerHorarios(int doctorId)
+        {
+            // Si nos mandan un ID invÃ¡lido, devolvemos una lista vacÃ­a para no romper la app
+            if (doctorId <= 0)
+                return new List<HorarioDoctorDTO>(); 
+
+            return _horariosDoctorRepository.ObtenerHorarios(doctorId);
+        }
+
+        public RequestStatus CrearHorario(HorarioDoctorDTO horario)
+        {
+            // Validaciones de Negocio (Business Logic)
+            if (horario.DoctorId <= 0)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "El ID del doctor no es vÃ¡lido." };
+
+            if (horario.DiaSemana < 1 || horario.DiaSemana > 7)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "El dÃ­a de la semana debe estar entre 1 (Lunes) y 7 (Domingo)." };
+
+            if (horario.HoraInicio >= horario.HoraFin)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "La hora de inicio debe ser menor a la hora de fin." };
+
+            // Si pasa todas las validaciones, lo mandamos al repositorio
+            return _horariosDoctorRepository.CrearHorario(horario);
+        }
+
+        public RequestStatus ActualizarHorario(HorarioDoctorDTO horario)
+        {
+            // Validaciones de Negocio
+            if (horario.HorarioId <= 0)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "El ID del horario a actualizar no es vÃ¡lido." };
+
+            if (horario.DiaSemana < 1 || horario.DiaSemana > 7)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "El dÃ­a de la semana debe estar entre 1 (Lunes) y 7 (Domingo)." };
+
+            if (horario.HoraInicio >= horario.HoraFin)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "La hora de inicio debe ser menor a la hora de fin." };
+
+            return _horariosDoctorRepository.ActualizarHorario(horario);
+        }
+
+        public RequestStatus EliminarHorario(int horarioId)
+        {
+            if (horarioId <= 0)
+                return new RequestStatus { CodeStatus = 0, MessageStatus = "El ID del horario no es vÃ¡lido." };
+
+            return _horariosDoctorRepository.EliminarHorario(horarioId);
+        }
+
+        #endregion
+        }
 }

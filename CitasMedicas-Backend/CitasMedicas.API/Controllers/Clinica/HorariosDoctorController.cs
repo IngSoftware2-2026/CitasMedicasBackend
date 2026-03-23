@@ -1,31 +1,30 @@
 using CitasMedicas.Models.Models;
-using CitasMedicas.DataAccess.Repositories.Clinica;
+using CitasMedicas.BusinessLogic.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
-
 namespace CitasMedicas.API.Controllers
 {
-    // Esta es la ruta principal en internet para llegar a tus funciones
     [Route("api/doctores")] 
     [ApiController]
     public class HorariosDoctorController : ControllerBase
     {
-        private readonly HorariosDoctorRepository _horariosRepository;
+        // Usamos la clase normal sin la "I"
+        private readonly ClinicaService _clinicaService;
 
-        // Constructor: Aquí inicializamos tu Repositorio
-        public HorariosDoctorController()
+        // Se lo pedimos al servidor en el constructor
+        public HorariosDoctorController(ClinicaService clinicaService)
         {
-            _horariosRepository = new HorariosDoctorRepository();
+            _clinicaService = clinicaService;
         }
 
-        // 1. GET: api/doctores/5/horarios
         [HttpGet("{doctorId}/horarios")]
+        // ... (todo lo demás hacia abajo se queda exactamente igual)
         public IActionResult ObtenerHorarios(int doctorId)
         {
             try
             {
-                var horarios = _horariosRepository.ObtenerHorarios(doctorId);
-                return Ok(horarios); // Devuelve un código HTTP 200 OK con la lista de horarios
+                var horarios = _clinicaService.ObtenerHorarios(doctorId);
+                return Ok(horarios); 
             }
             catch (Exception ex)
             {
@@ -33,34 +32,27 @@ namespace CitasMedicas.API.Controllers
             }
         }
 
-        // 2. POST: api/doctores/horarios
         [HttpPost("horarios")]
         public IActionResult CrearHorario([FromBody] HorarioDoctorDTO horario)
         {
             if (horario == null)
-            {
                 return BadRequest("Los datos del horario no pueden estar vacíos.");
-            }
 
-            var resultado = _horariosRepository.CrearHorario(horario);
+            var resultado = _clinicaService.CrearHorario(horario);
 
-            // Verificamos el CodeStatus que viene desde tu SQL (1 = Éxito, 0 = Error)
             if (resultado.CodeStatus == 1)
                 return Ok(resultado); 
             else
-                return BadRequest(resultado); // Falló alguna validación (ej. chocan las horas)
+                return BadRequest(resultado); 
         }
 
-        // 3. PUT: api/doctores/horarios
         [HttpPut("horarios")]
         public IActionResult ActualizarHorario([FromBody] HorarioDoctorDTO horario)
         {
             if (horario == null || horario.HorarioId == 0)
-            {
                 return BadRequest("Datos inválidos para actualizar el horario.");
-            }
 
-            var resultado = _horariosRepository.ActualizarHorario(horario);
+            var resultado = _clinicaService.ActualizarHorario(horario);
 
             if (resultado.CodeStatus == 1)
                 return Ok(resultado);
@@ -68,11 +60,10 @@ namespace CitasMedicas.API.Controllers
             return BadRequest(resultado);
         }
 
-        // 4. DELETE: api/doctores/horarios/10
         [HttpDelete("horarios/{horarioId}")]
         public IActionResult EliminarHorario(int horarioId)
         {
-            var resultado = _horariosRepository.EliminarHorario(horarioId);
+            var resultado = _clinicaService.EliminarHorario(horarioId);
 
             if (resultado.CodeStatus == 1)
                 return Ok(resultado);
