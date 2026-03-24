@@ -13,73 +13,19 @@ namespace CitasMedicas.DataAccess.Repositories.Accesos
 {
     public class AuthRepository : IAuthRepository
     {
-<<<<<<< HEAD
         public virtual UsuarioDTO Login(string nombreUsuario, string clave)
-=======
-        public UsuariosDTO ValidarUsuario(string nombreUsuario, string clave)
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@NombreUsuario", nombreUsuario);
-            parameter.Add("@Clave", clave);
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            var result = db.Query<RolDTO>(
+                ScriptDatabase.SP_Roles_Listar,
+                commandType: CommandType.StoredProcedure
+            ).ToList();
 
-                var result = db.QueryFirstOrDefault<dynamic>(
-                    ScriptDatabase.SP_Usuarios_Login,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
-
-                if (result == null)
-                    return null;
-
-                return new UsuariosDTO
-                {
-                    UsuarioId = (int)result.UsuarioId,
-                    NombreUsuario = result.NombreUsuario?.ToString(),
-                    Correo = result.Correo?.ToString(),
-                    Telefono = result.Telefono?.ToString(),
-                    Clave = result.ClaveHash?.ToString(),
-                    RolId = (int)result.RolId,
-                    Activo = (bool)result.Activo,
-                    FechaCreacion = result.FechaCreacion != null ? (DateTime)result.FechaCreacion : null
-                };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en ValidarUsuario: {ex.Message}");
-                return null;
-            }
-        }
-
-        public dynamic ValidarUsuarioDebug(string nombreUsuario, string clave)
-        {
-            var parameter = new DynamicParameters();
-            parameter.Add("@NombreUsuario", nombreUsuario);
-            parameter.Add("@Clave", clave);
-
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
-                var result = db.QueryFirstOrDefault<dynamic>(
-                    ScriptDatabase.SP_Usuarios_Login,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return new { Error = ex.Message };
-            }
+            return null; // Ajusta el retorno según la implementación real de dev
         }
 
         public IEnumerable<RolDTO> Listar()
->>>>>>> origin/dev
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
