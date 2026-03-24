@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -5,11 +6,24 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+=======
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+>>>>>>> origin/dev
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+<<<<<<< HEAD
     <PackageReference Include="FluentAssertions" Version="8.9.0" />
+=======
+>>>>>>> origin/dev
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.9.3" />
@@ -17,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <Using Include="Xunit" />
   </ItemGroup>
 
@@ -28,3 +43,15 @@
   </ItemGroup>
 
 </Project>
+=======
+    <ProjectReference Include="..\CitasMedicas.BusinessLogic\CitasMedicas.BusinessLogic.csproj" />
+    <ProjectReference Include="..\CitasMedicas.DataAccess\CitasMedicas.DataAccess.csproj" />
+    <ProjectReference Include="..\CitasMedicas.Models\CitasMedicas.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>
+>>>>>>> origin/dev

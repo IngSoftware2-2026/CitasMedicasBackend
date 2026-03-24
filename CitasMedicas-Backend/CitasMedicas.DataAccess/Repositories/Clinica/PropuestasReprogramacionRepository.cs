@@ -8,42 +8,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CitasMedicas.DataAccess.Repositories.Catalogos
+namespace CitasMedicas.DataAccess.Repositories.Clinica
 {
-    public class EspecialidadesRepository : IEspecialidadesRepository
+    public class PropuestasReprogramacionRepository
     {
-        public IEnumerable<EspecialidadesDTO> Listar()
-        {
-            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
-            var result = db.Query<EspecialidadesDTO>(
-                ScriptDatabase.SP_Especialidades_Listar,
-                commandType: CommandType.StoredProcedure
-            ).ToList();
-
-            return result;
-        }
-
-        public RequestStatus EspecialidadInsertar(EspecialidadesDTO especialidad)
+        public RequestStatus CrearPropuesta(PropuestasReprogramacionDTO propuesta)
         {
             var parameter = new DynamicParameters();
-            parameter.Add("@Nombre", especialidad.Nombre);
-            parameter.Add("@Activo", especialidad.Activo);
+            parameter.Add("@SolicitudCitaId", propuesta.SolicitudCitaId);
+            parameter.Add("@SolicitudPublicaId", propuesta.SolicitudPublicaId);
+            parameter.Add("@OpcionInicio", propuesta.OpcionInicio);
+            parameter.Add("@UsuarioProponeId", propuesta.UsuarioProponeId);
 
             try
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
                 var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Especialidades_Insertar,
+                    ScriptDatabase.SP_CrearPropuestaReprogramacion,
                     parameter,
                     commandType: CommandType.StoredProcedure
                 );
-
                 return result ?? new RequestStatus
                 {
                     CodeStatus = 0,
-                    MessageStatus = "Error desconocido al insertar"
+                    MessageStatus = "Error desconocido al crear la propuesta"
                 };
             }
             catch (Exception ex)
@@ -56,28 +44,24 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
             }
         }
 
-        public RequestStatus EspecialidadEditar(EspecialidadesDTO especialidad)
+        public RequestStatus AceptarPropuesta(AceptarPropuestaReprogramacionDTO propuesta)
         {
             var parameter = new DynamicParameters();
-
-            parameter.Add("@EspecialidadId", especialidad.EspecialidadId);
-            parameter.Add("@Nombre", especialidad.Nombre);
-            parameter.Add("@Activo", especialidad.Activo);
+            parameter.Add("@PropuestaId", propuesta.PropuestaId);
+            parameter.Add("@UsuarioId", propuesta.UsuarioId);
 
             try
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
                 var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Especialidades_Editar,
+                    ScriptDatabase.SP_AceptarPropuestaReprogramacion,
                     parameter,
                     commandType: CommandType.StoredProcedure
                 );
-
                 return result ?? new RequestStatus
                 {
                     CodeStatus = 0,
-                    MessageStatus = "Error desconocido al actualizar"
+                    MessageStatus = "Error desconocido al aceptar la propuesta"
                 };
             }
             catch (Exception ex)
@@ -90,26 +74,23 @@ namespace CitasMedicas.DataAccess.Repositories.Catalogos
             }
         }
 
-
-        public RequestStatus EspecialidadEliminar(int especialidadId)
+        public RequestStatus RechazarPropuesta(int propuestaId)
         {
             var parameter = new DynamicParameters();
-            parameter.Add("@EspecialidadId", especialidadId);
+            parameter.Add("@PropuestaId", propuestaId);
 
             try
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-
                 var result = db.QueryFirstOrDefault<RequestStatus>(
-                    ScriptDatabase.SP_Especialidades_Eliminar,
+                    ScriptDatabase.SP_RechazarPropuestaReprogramacion,
                     parameter,
                     commandType: CommandType.StoredProcedure
                 );
-
                 return result ?? new RequestStatus
                 {
                     CodeStatus = 0,
-                    MessageStatus = "Error desconocido al eliminar"
+                    MessageStatus = "Error desconocido al rechazar la propuesta"
                 };
             }
             catch (Exception ex)

@@ -16,7 +16,7 @@ namespace CitasMedicas.API.Controllers.Accesos
         }
 
         [HttpPost("Login")]
-        public IActionResult Login([FromBody] LoginDTO login)
+        public IActionResult Login([FromBody] LoginRequest login)
         {
             var result = _accesoService.Login(login);
             return StatusCode(result.Code, result);

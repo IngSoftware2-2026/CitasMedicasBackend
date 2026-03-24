@@ -5,7 +5,12 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using CitasMedicas.BusinessLogic.Configuration;
+using CitasMedicas.BusinessLogic.Services;
+using CitasMedicas.DataAccess.Repositories.Catalogos;
+using CitasMedicas.DataAccess.Repositories.Consultas;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
@@ -14,10 +19,24 @@ JwtSettings.Initialize(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton(connectionString);
 builder.Services.DataAccess(connectionString);
+builder.Services.AddScoped<EspecialidadesRepository>();
+builder.Services.AddScoped<SalasRepository>();
+builder.Services.AddScoped<ConsultasRepository>();
+builder.Services.AddScoped<EstadosRepository>();
+builder.Services.AddScoped<CatalogoService>();
+builder.Services.AddScoped<ConsultasService>();
 
 // Add services to the container.
-
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,15 +66,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:4201", "http://localhost:4202", "http://localhost:4203", "http://localhost:4204", "http://localhost:4205")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
     });
 });
-
-// Add services to the container.
-builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -109,14 +125,14 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/swagger");
-    return Task.CompletedTask;
-});
+//app.MapGet("/", context =>
+//{
+//    context.Response.Redirect("/swagger");
+//    return Task.CompletedTask;
+//});
 
-
-app.UseHttpsRedirection();
+// Deshabilitar HTTPS redirection para desarrollo local
+// app.UseHttpsRedirection();
 
 // CORS debe ir ANTES de otros middlewares - IMPORTANTE
 app.UseCors("AllowAngularApp");

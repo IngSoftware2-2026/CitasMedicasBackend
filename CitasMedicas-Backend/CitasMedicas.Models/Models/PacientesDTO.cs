@@ -27,5 +27,7 @@ namespace CitasMedicas.Models.Models
         public bool Activo { get; set; }
 
         public DateTime FechaCreacion { get; set; }
+
+        public string? Paciente { get; set; }
     }
 }
