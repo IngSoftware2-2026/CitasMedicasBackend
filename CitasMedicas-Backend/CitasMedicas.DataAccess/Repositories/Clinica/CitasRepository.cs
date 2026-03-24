@@ -62,22 +62,15 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             parameter.Add("@Desde", filtro.Desde);
             parameter.Add("@Hasta", filtro.Hasta);
 
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-                var result = db.Query<CitasListadoDTO>(
-                    ScriptDatabase.SP_Citas_ObtenerPorFiltro,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                ).ToList();
+            var result = db.Query<CitasListadoDTO>(
+                ScriptDatabase.SP_Citas_ObtenerPorFiltro,
+                parameter,
+                commandType: CommandType.StoredProcedure
+            ).ToList();
 
-                return result;
-            }
-            catch
-            {
-                return new List<CitasListadoDTO>();
-            }
+            return result;
         }
 
         public CitasDetalleDTO? CitaObtenerPorId(int citaId)
@@ -85,22 +78,15 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             var parameter = new DynamicParameters();
             parameter.Add("@CitaId", citaId);
 
-            try
-            {
-                using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-                var result = db.QueryFirstOrDefault<CitasDetalleDTO>(
-                    ScriptDatabase.SP_Citas_ObtenerPorId,
-                    parameter,
-                    commandType: CommandType.StoredProcedure
-                );
+            var result = db.QueryFirstOrDefault<CitasDetalleDTO>(
+                ScriptDatabase.SP_Citas_ObtenerPorId,
+                parameter,
+                commandType: CommandType.StoredProcedure
+            );
 
-                return result;
-            }
-            catch
-            {
-                return null;
-            }
+            return result;
         }
 
         public RequestStatus CitaCambiarEstado(CitasCambiarEstadoDTO cambioEstado)
