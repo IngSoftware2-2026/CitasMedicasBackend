@@ -46,7 +46,7 @@ namespace CitasMedicas.BusinessLogic.Services
         #region Consultas Clínicas
         
         // public ServiceResult ConsultaInsertar(int citaId, int medicoIdLogueado, ConsultaDTO consulta)
-        public ServiceResult ConsultaInsertar(ConsultaDTO consulta)
+        public ServiceResult ConsultaInsertar(ConsultaDto consulta)
         {
             // if (citaId <= 0)
             //     return new ServiceResult().BadRequest("El id de la cita es requerido");
@@ -73,7 +73,7 @@ namespace CitasMedicas.BusinessLogic.Services
         }
 
         // public ServiceResult ConsultaActualizar(int citaId, int medicoIdLogueado, ConsultaDTO consulta)
-        public ServiceResult ConsultaActualizar(ConsultaDTO consulta)
+        public ServiceResult ConsultaActualizar(ConsultaDto consulta)
         {
             // if (citaId <= 0)
             //     return new ServiceResult().BadRequest("El id de la cita es requerido");
@@ -125,6 +125,19 @@ namespace CitasMedicas.BusinessLogic.Services
             catch (Exception ex)
             {
                 return new ServiceResult().Error($"Error inesperado al obtener el historial clínico: {ex.Message}");
+            }
+        }
+        
+        public ServiceResult ObtenerTodasLasConsultas()
+        {
+            try
+            {
+                var consultas = _consultasRepository.GetAllConsultasAsync();
+                return new ServiceResult().Ok(consultas);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al recuperar el listado de consultas: {ex.Message}");
             }
         }
 

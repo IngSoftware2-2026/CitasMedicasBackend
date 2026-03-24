@@ -1,6 +1,6 @@
 namespace CitasMedicas.Models.Models
 { 
-    public class ConsultaDTO
+    public class ConsultaDto
     {
         public int CitaId { get; set; }
         public string? Motivo { get; set; }
@@ -8,7 +8,7 @@ namespace CitasMedicas.Models.Models
         public string? Tratamiento { get; set; }
     }
 
-    public class ConsultaDetalleDTO
+    public class ConsultaDetalleDto
     {
         public int ConsultaId { get; set; }
         public int CitaId { get; set; }
@@ -18,7 +18,7 @@ namespace CitasMedicas.Models.Models
         public DateTime FechaCreacion { get; set; }
     }
 
-    public class HistorialClinicoDTO
+    public class HistorialClinicoDto
     {
         public int ConsultaId { get; set; }
         public string? Motivo { get; set; }

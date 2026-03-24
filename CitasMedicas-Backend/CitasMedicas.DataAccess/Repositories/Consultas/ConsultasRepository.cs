@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.DataAccess.Repositories.Consultas
 {
-    public class ConsultasRepository
+    public abstract class ConsultasRepository
     {
-        public RequestStatus ConsultaInsertar(ConsultaDTO consulta)
+        public RequestStatus ConsultaInsertar(ConsultaDto consulta)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@CitaId", consulta.CitaId);
@@ -41,7 +41,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
         }
         
-        public RequestStatus ConsultaActualizar(ConsultaDTO consulta)
+        public RequestStatus ConsultaActualizar(ConsultaDto consulta)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@ConsultaId", consulta.CitaId); 
@@ -70,7 +70,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
         }
 
-        public ConsultaDetalleDTO? ObtenerPorCita(int citaId)
+        public ConsultaDetalleDto? ObtenerPorCita(int citaId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@CitaId", citaId);
@@ -80,7 +80,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-                var result = db.QueryFirstOrDefault<ConsultaDetalleDTO>(
+                var result = db.QueryFirstOrDefault<ConsultaDetalleDto>(
                     ScriptDatabase.SP_Consulta_Obtener_PorCita,
                     parameter,
                     commandType: CommandType.StoredProcedure
@@ -90,11 +90,11 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
             catch
             {
-                return new ConsultaDetalleDTO();
+                return new ConsultaDetalleDto();
             }
         }
 
-        public IEnumerable<HistorialClinicoDTO> ObtenerHistorialPaciente(int pacienteId)
+        public IEnumerable<HistorialClinicoDto> ObtenerHistorialPaciente(int pacienteId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@PacienteId", pacienteId);
@@ -102,7 +102,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             try
             {
                 using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
-                return db.Query<HistorialClinicoDTO>(
+                return db.Query<HistorialClinicoDto>(
                     ScriptDatabase.SP_Consulta_Obtener_PorPaciente, 
                     parameter,
                     commandType: CommandType.StoredProcedure
@@ -110,9 +110,11 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
             catch (Exception)
             {
-                return Enumerable.Empty<HistorialClinicoDTO>();
+                return Enumerable.Empty<HistorialClinicoDto>();
             }
         }
+            
+        public abstract IEnumerable<ConsultaDto> GetAllConsultasAsync();
         
     }
 }
