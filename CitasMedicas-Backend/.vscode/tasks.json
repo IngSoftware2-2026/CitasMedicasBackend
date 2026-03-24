@@ -20,6 +20,16 @@
 				"$msCompile"
 			],
 			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
 		}
 	]
 }
