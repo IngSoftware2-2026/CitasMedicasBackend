@@ -71,7 +71,7 @@ namespace CitasMedicas.BusinessLogic.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuarioId.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, usuario.NombreUsuario),
-                new Claim(ClaimTypes.Role, rol?.NombreRol ?? ""),
+                new Claim(ClaimTypes.Role, rol?.CodigoRol ?? ""),
                 new Claim("RolId", usuario.RolId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
