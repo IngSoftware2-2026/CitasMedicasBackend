@@ -60,6 +60,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             parameters.Add("@Correo", paciente.Correo, DbType.String);
             parameters.Add("@FechaNacimiento", paciente.FechaNacimiento, DbType.Date);
             parameters.Add("@NumeroIdentidad", paciente.NumeroIdentidad, DbType.String);
+            parameters.Add("@Activo", paciente.Activo, DbType.Boolean);
 
             return db.QueryFirstOrDefault<RequestStatus>(
                 ScriptDatabase.SP_Pacientes_Editar,
