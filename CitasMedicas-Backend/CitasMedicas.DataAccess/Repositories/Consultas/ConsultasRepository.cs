@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CitasMedicas.DataAccess.Repositories.Consultas
 {
-    public abstract class ConsultasRepository
+    public class ConsultasRepository
     {
         public RequestStatus ConsultaInsertar(ConsultaDto consulta)
         {
@@ -114,7 +114,14 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
         }
             
-        public abstract IEnumerable<ConsultaDto> GetAllConsultasAsync();
+        public IEnumerable<ConsultaDto> GetAllConsultasAsync()   
+        {
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+            return db.Query<ConsultaDto>(
+                ScriptDatabase.SP_Pacientes_Listar,
+                commandType: CommandType.StoredProcedure
+            );
+        }
         
     }
 }
