@@ -41,7 +41,7 @@ namespace CitasMedicas.API.Controllers.Clinica
                 int usuarioIdPaciente = 0;
 
                 if (result.Data is PacientesDTO dto)
-                    usuarioIdPaciente = dto.UsuarioId;
+                    usuarioIdPaciente = dto.UsuarioId ?? 0;
                 else
                     usuarioIdPaciente = (int)result.Data.UsuarioId;
 

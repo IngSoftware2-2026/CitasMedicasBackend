@@ -348,7 +348,7 @@ namespace CitasMedicas.BusinessLogic.Services
             if (paciente == null)
                 return new ServiceResult().BadRequest("Los datos del paciente son requeridos");
 
-            if (paciente.UsuarioId <= 0)
+            if (!paciente.UsuarioId.HasValue || paciente.UsuarioId <= 0)
                 return new ServiceResult().BadRequest("El UsuarioId es requerido y debe ser mayor que cero.");
 
             if (string.IsNullOrWhiteSpace(paciente.Nombres))
@@ -379,7 +379,7 @@ namespace CitasMedicas.BusinessLogic.Services
             if (paciente.PacienteId <= 0)
                 return new ServiceResult().BadRequest("El ID del paciente es requerido");
 
-            if (paciente.UsuarioId <= 0)
+            if (!paciente.UsuarioId.HasValue || paciente.UsuarioId <= 0)
                 return new ServiceResult().BadRequest("El UsuarioId es requerido y debe ser mayor que cero.");
 
             if (string.IsNullOrWhiteSpace(paciente.Nombres))
