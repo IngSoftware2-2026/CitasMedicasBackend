@@ -10,7 +10,7 @@ namespace CitasMedicas.Models.Models
     {
         public int PacienteId { get; set; }
 
-        public int UsuarioId { get; set; }
+        public int? UsuarioId { get; set; }
 
         public string Nombres { get; set; }
 
@@ -20,13 +20,13 @@ namespace CitasMedicas.Models.Models
 
         public string Correo { get; set; }
 
-        public DateTime FechaNacimiento { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
 
         public string NumeroIdentidad { get; set; }
 
-        public bool Activo { get; set; }
+        public bool? Activo { get; set; }
 
-        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaCreacion { get; set; }
 
         public string? Paciente { get; set; }
     }

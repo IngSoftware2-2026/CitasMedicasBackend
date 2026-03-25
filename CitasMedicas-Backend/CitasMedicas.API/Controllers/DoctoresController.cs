@@ -1,3 +1,4 @@
+using CitasMedicas.BusinessLogic;
 using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,14 @@ namespace CitasMedicas.API.Controllers
             var data = _repo.Listar(activo, especialidadId);
             return Ok(data);
         }
-        
+
+        [HttpGet("~/Doctores/Listar")]
+        public IActionResult Listar(bool? activo, int? especialidadId)
+        {
+            var result = new ServiceResult().Ok(_repo.Listar(activo, especialidadId));
+            return StatusCode(result.Code, result);
+        }
+
         [HttpGet("{id}")]
         public IActionResult ObtenerDoctorPorId(int id)
         {
