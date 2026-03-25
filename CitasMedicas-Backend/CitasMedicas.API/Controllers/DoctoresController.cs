@@ -1,4 +1,4 @@
-﻿using CitasMedicas.DataAccess.Repositories.Clinica;
+using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,8 +39,8 @@ namespace CitasMedicas.API.Controllers
         [HttpPost]
         public IActionResult CrearDoctor([FromBody] DoctoresDTO doctor)
         {
-            _repo.Crear(doctor);
-            return Ok();
+            var newId = _repo.Crear(doctor);
+            return Ok(new { medicoId = newId });
         }
 
         [HttpPut("{id}")]
@@ -48,6 +48,16 @@ namespace CitasMedicas.API.Controllers
         {
             _repo.Editar(id, doctor);
             return Ok();
+        }
+
+        /// <summary>
+        /// Lista las especialidades asignadas a un doctor.
+        /// </summary>
+        [HttpGet("{id}/especialidades")]
+        public IActionResult ListarEspecialidades(int id)
+        {
+            var data = _repo.ListarEspecialidades(id);
+            return Ok(data);
         }
 
         [HttpPost("{id}/especialidades")]
@@ -69,6 +79,17 @@ namespace CitasMedicas.API.Controllers
         {
             _repo.SetEspecialidadPrincipal(id, especialidadId);
             return Ok();
+        }
+
+        /// <summary>
+        /// Lista las salas activas.
+        /// Se ubica en este controller auxiliarmente para el formulario de doctores.
+        /// </summary>
+        [HttpGet("salas")]
+        public IActionResult ListarSalas()
+        {
+            var data = _repo.ListarSalas();
+            return Ok(data);
         }
     }
 }

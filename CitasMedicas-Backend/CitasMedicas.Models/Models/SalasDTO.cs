@@ -10,12 +10,9 @@ namespace CitasMedicas.Models.Models
     {
         public int SalaId { get; set; }
 
-        public string CodigoSala { get; set; } = null!;
-
-        public string NombreSala { get; set; } = null!;
-
-        public string Ubicacion { get; set; } = null!;
-
+        public string CodigoSala { get; set; } = string.Empty;
+        public string NombreSala { get; set; } = string.Empty;
+        public string Ubicacion { get; set; } = string.Empty;
         public bool Activo { get; set; }
     }
 }
