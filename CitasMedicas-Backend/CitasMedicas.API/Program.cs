@@ -30,7 +30,7 @@ builder.Services.AddScoped<ConsultasService>();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        //options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     })
     .ConfigureApiBehaviorOptions(options =>
@@ -139,7 +139,7 @@ app.UseCors("AllowAngularApp");
 
 app.UseStaticFiles();
 
-app.UseMiddleware<ApiKeyMiddleware>();
+//app.UseMiddleware<ApiKeyMiddleware>();
 
 app.UseAuthentication();
 
