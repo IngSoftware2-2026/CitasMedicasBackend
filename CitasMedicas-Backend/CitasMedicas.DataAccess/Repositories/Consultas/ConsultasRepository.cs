@@ -41,10 +41,10 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
             }
         }
         
-        public RequestStatus ConsultaActualizar(ConsultaDto consulta)
+        public RequestStatus ConsultaActualizar(ActualizarConsultaDto consulta)
         {
             var parameter = new DynamicParameters();
-            parameter.Add("@ConsultaId", consulta.CitaId); 
+            parameter.Add("@ConsultaId", consulta.ConsultaId); 
             parameter.Add("@Motivo", consulta.Motivo);
             parameter.Add("@Notas", consulta.Notas);
             parameter.Add("@Tratamiento", consulta.Tratamiento);

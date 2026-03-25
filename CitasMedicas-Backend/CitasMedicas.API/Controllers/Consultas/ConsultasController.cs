@@ -32,13 +32,12 @@ namespace CitasMedicas.API.Controllers.Consultas
             return StatusCode(result.Code, result);
         }
         
-        // [HttpPut("actualizar-consulta-por-cita")]
-        // public IActionResult Actualizar(int citaId, [FromBody] ConsultaDto consulta)
-        // {
-        //     consulta.CitaId = citaId;
-        //     var result = ConsultaActualizar(consulta);
-        //     return StatusCode(result.Code, result);
-        // }
+        [HttpPut("actualizar-consulta")]
+        public IActionResult Actualizar([FromBody] ActualizarConsultaDto consulta)
+        {
+            var result = _consultasService.ConsultaActualizar(consulta);
+            return StatusCode(result.Code, result);
+        }
         
         [HttpGet("obtener-consulta")]
         public IActionResult ObtenerHistorial(int pacienteId)

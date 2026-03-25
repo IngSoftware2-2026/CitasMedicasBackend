@@ -73,7 +73,7 @@ namespace CitasMedicas.BusinessLogic.Services
         }
 
         // public ServiceResult ConsultaActualizar(int citaId, int medicoIdLogueado, ConsultaDTO consulta)
-        public ServiceResult ConsultaActualizar(ConsultaDto consulta)
+        public ServiceResult ConsultaActualizar(ActualizarConsultaDto consulta)
         {
             // if (citaId <= 0)
             //     return new ServiceResult().BadRequest("El id de la cita es requerido");
