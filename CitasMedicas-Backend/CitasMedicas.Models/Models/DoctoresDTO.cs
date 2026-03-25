@@ -27,5 +27,8 @@ namespace CitasMedicas.Models.Models
         // Campos opcionales que el SP puede retornar via JOIN
         public string? NombreEspecialidad { get; set; }
         public string? NombreSala { get; set; }
+
+        public int? MedicoUsuarioId { get; set; }
+        public string? Medico { get; set; }
     }
 }
