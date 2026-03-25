@@ -1,0 +1,75 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run CitasMedicas.API",
+			"type": "shell",
+			"command": "export PATH=\"/usr/local/share/dotnet:$PATH\" && dotnet run --project CitasMedicas.API/CitasMedicas.API.csproj",
+			"isBackground": true,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		}
+	]
+}

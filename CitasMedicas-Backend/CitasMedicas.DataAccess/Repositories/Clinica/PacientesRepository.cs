@@ -7,7 +7,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
 {
     public class PacientesRepository
     {
-        public IEnumerable<PacientesDTO> Listar()
+        public virtual IEnumerable<PacientesDTO> Listar()
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
             return db.Query<PacientesDTO>(
@@ -16,7 +16,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             );
         }
 
-        public PacientesDTO ObtenerPorId(int pacienteId)
+        public virtual PacientesDTO ObtenerPorId(int pacienteId)
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
             var parameters = new DynamicParameters();
@@ -29,7 +29,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             );
         }
 
-        public RequestStatus PacienteInsertar(PacientesDTO paciente)
+        public virtual RequestStatus PacienteInsertar(PacientesDTO paciente)
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
             var parameters = new DynamicParameters();
@@ -48,7 +48,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             );
         }
 
-        public RequestStatus PacienteEditar(PacientesDTO paciente)
+        public virtual RequestStatus PacienteEditar(PacientesDTO paciente)
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
             var parameters = new DynamicParameters();
@@ -60,6 +60,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             parameters.Add("@Correo", paciente.Correo, DbType.String);
             parameters.Add("@FechaNacimiento", paciente.FechaNacimiento, DbType.Date);
             parameters.Add("@NumeroIdentidad", paciente.NumeroIdentidad, DbType.String);
+            parameters.Add("@Activo", paciente.Activo, DbType.Boolean);
 
             return db.QueryFirstOrDefault<RequestStatus>(
                 ScriptDatabase.SP_Pacientes_Editar,
@@ -68,7 +69,7 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             );
         }
 
-        public RequestStatus PacienteEliminar(int pacienteId)
+        public virtual RequestStatus PacienteEliminar(int pacienteId)
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
             var parameters = new DynamicParameters();
