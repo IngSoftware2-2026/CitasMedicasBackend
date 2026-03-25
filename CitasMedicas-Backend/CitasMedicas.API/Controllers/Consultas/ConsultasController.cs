@@ -32,7 +32,7 @@ namespace CitasMedicas.API.Controllers.Consultas
             return StatusCode(result.Code, result);
         }
         
-        [HttpPut("actualizar-consulta")]
+        [HttpPost("actualizar-consulta")]
         public IActionResult Actualizar([FromBody] ActualizarConsultaDto consulta)
         {
             var result = _consultasService.ConsultaActualizar(consulta);
