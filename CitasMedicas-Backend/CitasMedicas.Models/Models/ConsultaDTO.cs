@@ -2,10 +2,12 @@ namespace CitasMedicas.Models.Models
 { 
     public class ConsultaDto
     {
+        public int ConsultaId { get; set; }
         public int CitaId { get; set; }
         public string? Motivo { get; set; }
         public string? Notas { get; set; }
         public string? Tratamiento { get; set; }
+        public DateTime Fecha { get; set; }
     }
 
     public class ConsultaDetalleDto

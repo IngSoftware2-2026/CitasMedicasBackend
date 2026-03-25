@@ -118,7 +118,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
             return db.Query<ConsultaDto>(
-                ScriptDatabase.SP_Pacientes_Listar,
+                ScriptDatabase.SP_Todas_Consulta,
                 commandType: CommandType.StoredProcedure
             );
         }

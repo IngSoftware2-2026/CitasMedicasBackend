@@ -72,6 +72,7 @@ namespace CitasMedicas.DataAccess
         public static string SP_Consulta_Actualizar = "Clinica.sp_ActualizarConsulta";
         public static string SP_Consulta_Obtener_PorCita = "Clinica.sp_ObtenerConsultaPorCita";
         public static string SP_Consulta_Obtener_PorPaciente = "Clinica.sp_ObtenerConsultasPorPaciente";
+        public static string SP_Todas_Consulta = "Clinica.sp_ObtenerTodasConsultas";
        
         #endregion
 
