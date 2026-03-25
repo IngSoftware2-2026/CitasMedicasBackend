@@ -214,6 +214,20 @@ namespace CitasMedicas.BusinessLogic.Services
 
             try
             {
+                var conflictoDoctor = _citasRepository
+                    .CitasObtenerPorFiltro(new CitasFiltroDTO { MedicoId = cita.MedicoId })
+                    .Any(c => EsCitaEnConflicto(c, cita.Inicio, cita.Fin));
+
+                if (conflictoDoctor)
+                    return new ServiceResult().Conflict("El doctor ya tiene una cita en ese horario.");
+
+                var conflictoSala = _citasRepository
+                    .CitasObtenerPorFiltro(new CitasFiltroDTO { SalaId = cita.SalaId })
+                    .Any(c => EsCitaEnConflicto(c, cita.Inicio, cita.Fin));
+
+                if (conflictoSala)
+                    return new ServiceResult().Conflict("La sala ya está ocupada en ese horario.");
+
                 var response = _citasRepository.CitaInsertar(cita);
                 return MapRequestStatusToServiceResult(response);
             }
@@ -221,6 +235,24 @@ namespace CitasMedicas.BusinessLogic.Services
             {
                 return new ServiceResult().Error($"Error inesperado al crear la cita: {ex.Message}");
             }
+        }
+
+        private static bool EsCitaEnConflicto(CitasListadoDTO citaExistente, DateTime nuevoInicio, DateTime nuevoFin)
+        {
+            if (!EsEstadoBloqueante(citaExistente))
+                return false;
+
+            return nuevoInicio < citaExistente.Fin && nuevoFin > citaExistente.Inicio;
+        }
+
+        private static bool EsEstadoBloqueante(CitasListadoDTO citaExistente)
+        {
+            var codigo = citaExistente.CodigoEstado?.Trim().ToUpperInvariant();
+
+            if (!string.IsNullOrWhiteSpace(codigo))
+                return codigo != "CANC" && codigo != "NOAS";
+
+            return citaExistente.EstadoId != 4 && citaExistente.EstadoId != 5;
         }
 
         public ServiceResult CitasObtenerPorFiltro(CitasFiltroDTO filtro)
