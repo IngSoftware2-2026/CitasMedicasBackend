@@ -12,7 +12,7 @@ namespace CitasMedicas.DataAccess.Repositories.Consultas
 {
     public class ConsultasRepository
     {
-        public RequestStatus ConsultaInsertar(ConsultaDto consulta)
+        public RequestStatus ConsultaInsertar(CrearConsultaDto consulta)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@CitaId", consulta.CitaId);

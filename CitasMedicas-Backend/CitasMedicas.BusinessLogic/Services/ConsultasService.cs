@@ -45,20 +45,15 @@ namespace CitasMedicas.BusinessLogic.Services
 
         #region Consultas Clínicas
         
-        // public ServiceResult ConsultaInsertar(int citaId, int medicoIdLogueado, ConsultaDTO consulta)
-        public ServiceResult ConsultaInsertar(ConsultaDto consulta)
+        public ServiceResult ConsultaInsertar(CrearConsultaDto consulta)
         {
-            // if (citaId <= 0)
-            //     return new ServiceResult().BadRequest("El id de la cita es requerido");
-
-            // if (consulta == null)
-            //     return new ServiceResult().BadRequest("Los datos de la consulta son requeridos");
+            if (consulta == null) return new ServiceResult().BadRequest("Los datos de la consulta son requeridos");
 
             try
             {
-                // var cita = _citasRepository.CitaObtenerPorId(citaId);
-                // if (cita == null)
-                //     return new ServiceResult().NotFound("La cita especificada no existe.");
+                var cita = _citasRepository.CitaObtenerPorId(consulta.CitaId);
+                if (cita == null)
+                    return new ServiceResult().NotFound("La cita especificada no existe.");
 
                 // if (cita.MedicoId != medicoIdLogueado)
                 //     return new ServiceResult().Conflict("No está autorizado para registrar la consulta de este médico.");

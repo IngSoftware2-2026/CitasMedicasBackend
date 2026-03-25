@@ -19,7 +19,7 @@ namespace CitasMedicas.API.Controllers.Consultas
         }
         
         [HttpPost("Insertar-consulta")]
-        public IActionResult Insertar([FromBody] ConsultaDto consulta)
+        public IActionResult Insertar([FromBody] CrearConsultaDto consulta)
         {
             var result = _consultasService.ConsultaInsertar(consulta);
             return StatusCode(result.Code, result);
