@@ -21,7 +21,7 @@ namespace CitasMedicas.Tests.Controllers
         public PacientesControllerTests()
         {
             _mockRepo = new Mock<PacientesRepository>();
-            _service = new ClinicaService(_mockRepo.Object);
+            _service = new ClinicaService(null!, null!, null!, _mockRepo.Object);
             _controller = new PacientesController(_service);
         }
 
@@ -50,7 +50,7 @@ namespace CitasMedicas.Tests.Controllers
             var paciente = new PacientesDTO
             {
                 PacienteId = 1,
-                UsuarioId = 9, // Mismo que el usuario autenticado
+                UsuarioId = 9,
                 Nombres = "Juan",
                 Apellidos = "Pérez"
             };
@@ -73,7 +73,7 @@ namespace CitasMedicas.Tests.Controllers
             var paciente = new PacientesDTO
             {
                 PacienteId = 2,
-                UsuarioId = 10, // Diferente al usuario autenticado
+                UsuarioId = 10,
                 Nombres = "Otro",
                 Apellidos = "Paciente"
             };
@@ -107,6 +107,50 @@ namespace CitasMedicas.Tests.Controllers
             // Assert
             result.Should().NotBeNull();
             result!.StatusCode.Should().Be(200);
+        }
+
+        [Fact]
+        public void Editar_Recepcionista_PuedeEditarCualquierPaciente()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 5, rol: "RECEP");
+            var paciente = new PacientesDTO
+            {
+                PacienteId = 1,
+                UsuarioId = 9,
+                Nombres = "Juan",
+                Apellidos = "Pérez"
+            };
+            var response = new RequestStatus { CodeStatus = 1, MessageStatus = "Editado" };
+            _mockRepo.Setup(r => r.PacienteEditar(paciente)).Returns(response);
+
+            // Act
+            var result = _controller.Editar(paciente) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(200);
+        }
+
+        [Fact]
+        public void Editar_RetornaBadRequest_CuandoDatosInvalidos()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+            var paciente = new PacientesDTO
+            {
+                PacienteId = 0, // ID inválido
+                UsuarioId = 9,
+                Nombres = "Juan",
+                Apellidos = "Pérez"
+            };
+
+            // Act
+            var result = _controller.Editar(paciente) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(400);
         }
 
         #endregion
@@ -161,18 +205,48 @@ namespace CitasMedicas.Tests.Controllers
             result!.StatusCode.Should().Be(200);
         }
 
+        [Fact]
+        public void ObtenerPorId_RetornaNotFound_CuandoNoExiste()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+            _mockRepo.Setup(r => r.ObtenerPorId(999)).Returns((PacientesDTO)null!);
+
+            // Act
+            var result = _controller.ObtenerPorId(999) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(404);
+        }
+
+        [Fact]
+        public void ObtenerPorId_RetornaBadRequest_CuandoIdInvalido()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+
+            // Act
+            var result = _controller.ObtenerPorId(0) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(400);
+        }
+
         #endregion
 
         #region Listar
 
         [Fact]
-        public void Listar_RetornaOk()
+        public void Listar_RetornaOk_ConPacientes()
         {
             // Arrange
             SetUserClaims(usuarioId: 1, rol: "ADMIN");
             var pacientes = new List<PacientesDTO>
             {
-                new() { PacienteId = 1, Nombres = "Juan" }
+                new() { PacienteId = 1, Nombres = "Juan" },
+                new() { PacienteId = 2, Nombres = "María" }
             };
             _mockRepo.Setup(r => r.Listar()).Returns(pacientes);
 
@@ -182,6 +256,69 @@ namespace CitasMedicas.Tests.Controllers
             // Assert
             result.Should().NotBeNull();
             result!.StatusCode.Should().Be(200);
+        }
+
+        [Fact]
+        public void Listar_RetornaOk_SinPacientes()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+            _mockRepo.Setup(r => r.Listar()).Returns(new List<PacientesDTO>());
+
+            // Act
+            var result = _controller.Listar() as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(200);
+        }
+
+        #endregion
+
+        #region Insertar
+
+        [Fact]
+        public void Insertar_RetornaOk_CuandoDatosValidos()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+            var paciente = new PacientesDTO
+            {
+                UsuarioId = 9,
+                Nombres = "Juan",
+                Apellidos = "Pérez",
+                NumeroIdentidad = "0801199900001"
+            };
+            var response = new RequestStatus { CodeStatus = 1, MessageStatus = "Insertado" };
+            _mockRepo.Setup(r => r.PacienteInsertar(paciente)).Returns(response);
+
+            // Act
+            var result = _controller.Insertar(paciente) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(200);
+        }
+
+        [Fact]
+        public void Insertar_RetornaBadRequest_CuandoDatosInvalidos()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+            var paciente = new PacientesDTO
+            {
+                UsuarioId = 0,
+                Nombres = "",
+                Apellidos = "",
+                NumeroIdentidad = ""
+            };
+
+            // Act
+            var result = _controller.Insertar(paciente) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(400);
         }
 
         #endregion
@@ -202,6 +339,20 @@ namespace CitasMedicas.Tests.Controllers
             // Assert
             result.Should().NotBeNull();
             result!.StatusCode.Should().Be(200);
+        }
+
+        [Fact]
+        public void Eliminar_RetornaBadRequest_CuandoIdInvalido()
+        {
+            // Arrange
+            SetUserClaims(usuarioId: 1, rol: "ADMIN");
+
+            // Act
+            var result = _controller.Eliminar(0) as ObjectResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.StatusCode.Should().Be(400);
         }
 
         #endregion
