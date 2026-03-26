@@ -113,6 +113,128 @@ namespace CitasMedicas.BusinessLogic.Services
                 return new ServiceResult().Error($"Error inesperado al crear la solicitud: {ex.Message}");
             }
         }
+
+        public ServiceResult SolicitudesPublicasListar(SolicitudesFiltroDTO filtro)
+        {
+            if (filtro == null)
+                return new ServiceResult().BadRequest("Los filtros son requeridos");
+
+            if (filtro.Desde.HasValue && filtro.Hasta.HasValue && filtro.Desde > filtro.Hasta)
+                return new ServiceResult().BadRequest("La fecha inicial no puede ser mayor a la fecha final");
+
+            try
+            {
+                var lista = _solicitudesRepository.SolicitudesPublicasListar(filtro);
+                return new ServiceResult().Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al listar solicitudes públicas: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SolicitudesPublicasObtenerPorId(int solicitudId)
+        {
+            if (solicitudId <= 0)
+                return new ServiceResult().BadRequest("El id de la solicitud es requerido");
+
+            try
+            {
+                var detalle = _solicitudesRepository.SolicitudesPublicasObtenerPorId(solicitudId);
+
+                if (detalle == null)
+                    return new ServiceResult().NotFound("No se encontró la solicitud solicitada");
+
+                return new ServiceResult().Ok(detalle);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al obtener la solicitud: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SolicitudesPublicasCambiarEstado(CambiarEstadoSolicitudDTO cambio)
+        {
+            if (cambio == null)
+                return new ServiceResult().BadRequest("Los datos para cambiar estado son requeridos");
+
+            if (cambio.SolicitudId <= 0)
+                return new ServiceResult().BadRequest("El id de la solicitud es requerido");
+
+            if (string.IsNullOrWhiteSpace(cambio.CodigoEstado))
+                return new ServiceResult().BadRequest("El código de estado es requerido");
+
+            try
+            {
+                var response = _solicitudesRepository.SolicitudesPublicasCambiarEstado(cambio);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al cambiar el estado: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SolicitudesCitaListar(SolicitudesFiltroDTO filtro)
+        {
+            if (filtro == null)
+                return new ServiceResult().BadRequest("Los filtros son requeridos");
+
+            if (filtro.Desde.HasValue && filtro.Hasta.HasValue && filtro.Desde > filtro.Hasta)
+                return new ServiceResult().BadRequest("La fecha inicial no puede ser mayor a la fecha final");
+
+            try
+            {
+                var lista = _solicitudesRepository.SolicitudesCitaListar(filtro);
+                return new ServiceResult().Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al listar solicitudes: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SolicitudesCitaObtenerPorId(int solicitudId)
+        {
+            if (solicitudId <= 0)
+                return new ServiceResult().BadRequest("El id de la solicitud es requerido");
+
+            try
+            {
+                var detalle = _solicitudesRepository.SolicitudesCitaObtenerPorId(solicitudId);
+
+                if (detalle == null)
+                    return new ServiceResult().NotFound("No se encontró la solicitud solicitada");
+
+                return new ServiceResult().Ok(detalle);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al obtener la solicitud: {ex.Message}");
+            }
+        }
+
+        public ServiceResult SolicitudesCitaCambiarEstado(CambiarEstadoSolicitudDTO cambio)
+        {
+            if (cambio == null)
+                return new ServiceResult().BadRequest("Los datos para cambiar estado son requeridos");
+
+            if (cambio.SolicitudId <= 0)
+                return new ServiceResult().BadRequest("El id de la solicitud es requerido");
+
+            if (string.IsNullOrWhiteSpace(cambio.CodigoEstado))
+                return new ServiceResult().BadRequest("El código de estado es requerido");
+
+            try
+            {
+                var response = _solicitudesRepository.SolicitudesCitaCambiarEstado(cambio);
+                return MapRequestStatusToServiceResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al cambiar el estado: {ex.Message}");
+            }
+        }
         #endregion
 
         #region Propuestas reprogramacion
