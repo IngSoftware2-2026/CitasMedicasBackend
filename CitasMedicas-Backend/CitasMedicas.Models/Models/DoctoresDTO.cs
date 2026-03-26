@@ -24,11 +24,18 @@ namespace CitasMedicas.Models.Models
 
         public bool Activo { get; set; }
 
+        public string? Imagen { get; set; }
+
         // Campos opcionales que el SP puede retornar via JOIN
         public string? NombreEspecialidad { get; set; }
         public string? NombreSala { get; set; }
 
         public int? MedicoUsuarioId { get; set; }
         public string? Medico { get; set; }
+    }
+
+    public class ActualizarImagenDTO
+    {
+        public string? Imagen { get; set; }
     }
 }

@@ -109,27 +109,22 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
 
-            // Intentar con el SP primero, pero necesitamos capturar el ID
-            // Usamos INSERT directo para obtener SCOPE_IDENTITY()
-            var sql = @"
-                INSERT INTO Clinica.tbDoctores (UsuarioId, NombrePublico, SalaPredeterminadaId, 
-                    DuracionIntervaloMinutos, DuracionDefaultMinutos, MinutosBuffer)
-                VALUES (@UsuarioId, @NombrePublico, @SalaPredeterminadaId, 
-                    @DuracionIntervaloMinutos, @DuracionDefaultMinutos, @MinutosBuffer);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);
-            ";
-
             var parametros = new
             {
-                NombrePublico = doctor.NombrePublico,
                 UsuarioId = doctor.UsuarioId,
+                NombrePublico = doctor.NombrePublico,
                 SalaPredeterminadaId = doctor.SalaPredeterminadaId,
                 DuracionIntervaloMinutos = doctor.DuracionIntervaloMinutos,
                 DuracionDefaultMinutos = doctor.DuracionDefaultMinutos,
-                MinutosBuffer = doctor.MinutosBuffer
+                MinutosBuffer = doctor.MinutosBuffer,
+                Imagen = doctor.Imagen
             };
 
-            var newId = db.QuerySingle<int>(sql, parametros);
+            var newId = db.QuerySingle<int>(
+                "Clinica.sp_CrearDoctor",
+                parametros,
+                commandType: CommandType.StoredProcedure
+            );
             return newId;
         }
 
@@ -144,7 +139,8 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
                 SalaPredeterminadaId = doctor.SalaPredeterminadaId,
                 DuracionIntervaloMinutos = doctor.DuracionIntervaloMinutos,
                 DuracionDefaultMinutos = doctor.DuracionDefaultMinutos,
-                MinutosBuffer = doctor.MinutosBuffer
+                MinutosBuffer = doctor.MinutosBuffer,
+                Imagen = doctor.Imagen
             };
 
             db.Execute(

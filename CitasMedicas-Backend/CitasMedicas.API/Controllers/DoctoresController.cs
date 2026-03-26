@@ -58,6 +58,18 @@ namespace CitasMedicas.API.Controllers
             return Ok();
         }
 
+        [HttpPatch("{id}/imagen")]
+        public IActionResult ActualizarImagen(int id, [FromBody] ActualizarImagenDTO dto)
+        {
+            var doctor = _repo.ObtenerPorId(id);
+            if (doctor == null)
+                return NotFound(new { message = "Doctor no encontrado" });
+
+            doctor.Imagen = dto.Imagen;
+            _repo.Editar(id, doctor);
+            return Ok(new { message = "Imagen actualizada correctamente", imagen = dto.Imagen });
+        }
+
         /// <summary>
         /// Lista las especialidades asignadas a un doctor.
         /// </summary>
