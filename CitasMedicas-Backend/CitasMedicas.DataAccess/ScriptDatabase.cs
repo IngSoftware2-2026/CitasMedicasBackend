@@ -43,6 +43,12 @@ namespace CitasMedicas.DataAccess
         #region Solicitudes
         public static string SP_SolicitudesPublicas_Insertar = "Clinica.SP_SolicitudesPublicas_Insertar";
         public static string SP_SolicitudesCita_Insertar = "Clinica.SP_SolicitudesCita_Insertar";
+        public static string SP_SolicitudesPublicas_Listar = "Clinica.SP_SolicitudesPublicas_Listar";
+        public static string SP_SolicitudesPublicas_ObtenerPorId = "Clinica.SP_SolicitudesPublicas_ObtenerPorId";
+        public static string SP_SolicitudesPublicas_CambiarEstado = "Clinica.SP_SolicitudesPublicas_CambiarEstado";
+        public static string SP_SolicitudesCita_Listar = "Clinica.SP_SolicitudesCita_Listar";
+        public static string SP_SolicitudesCita_ObtenerPorId = "Clinica.SP_SolicitudesCita_ObtenerPorId";
+        public static string SP_SolicitudesCita_CambiarEstado = "Clinica.SP_SolicitudesCita_CambiarEstado";
         #endregion
 
         #region Propuestas Reprogramacion
