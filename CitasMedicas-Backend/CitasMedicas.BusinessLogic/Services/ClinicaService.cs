@@ -465,6 +465,26 @@ namespace CitasMedicas.BusinessLogic.Services
             }
         }
 
+        public ServiceResult ObtenerPacientePorUsuarioId(int usuarioId)
+        {
+            if (usuarioId <= 0)
+                return new ServiceResult().BadRequest("El id del usuario debe ser mayor que cero.");
+
+            try
+            {
+                var paciente = _pacientesRepository.ObtenerPorUsuarioId(usuarioId);
+
+                if (paciente == null)
+                    return new ServiceResult().NotFound("Paciente no encontrado para el usuario autenticado.");
+
+                return new ServiceResult().Ok(paciente);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al obtener paciente por usuario: {ex.Message}");
+            }
+        }
+
         public ServiceResult PacientesInsertar(PacientesDTO paciente)
         {
             if (paciente == null)
