@@ -18,7 +18,9 @@ namespace CitasMedicas.API.Controllers.Clinica
         [HttpPost("Insertar")]
         public IActionResult Insertar([FromBody] CitasInsertarDTO cita)
         {
+            Console.WriteLine($"[Citas/Insertar] solicitudId={cita?.SolicitudId}, pacienteId={cita?.PacienteId}, medicoId={cita?.MedicoId}, salaId={cita?.SalaId}, inicio={cita?.Inicio:O}, fin={cita?.Fin:O}, duracion={cita?.DuracionMinutos}, creadaPorUsuarioId={cita?.CreadaPorUsuarioId}");
             var result = _clinicaService.CitaInsertar(cita);
+            Console.WriteLine($"[Citas/Insertar] resultCode={result.Code}, success={result.Success}, message={result.Message}");
             return StatusCode(result.Code, result);
         }
 

@@ -4,6 +4,8 @@ using CitasMedicas.DataAccess;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -47,17 +49,67 @@ CitasMedicas.BusinessLogic.ServiceConfiguration.BusinessLogic(builder.Services);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.IncludeErrorDetails = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = JwtRegisteredClaimNames.Sub,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
             )
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                var reason = context.Exception switch
+                {
+                    SecurityTokenExpiredException expired =>
+                        $"JWT expired at {expired.Expires:O}.",
+                    SecurityTokenInvalidIssuerException invalidIssuer =>
+                        $"JWT invalid issuer. Expected '{builder.Configuration["Jwt:Issuer"]}', received '{invalidIssuer.InvalidIssuer}'.",
+                    SecurityTokenInvalidAudienceException invalidAudience =>
+                        $"JWT invalid audience. Expected '{builder.Configuration["Jwt:Audience"]}'.",
+                    SecurityTokenInvalidSignatureException =>
+                        "JWT invalid signature.",
+                    SecurityTokenNoExpirationException =>
+                        "JWT missing expiration.",
+                    _ => $"JWT authentication failed: {context.Exception.Message}"
+                };
+
+                Console.WriteLine($"[JWT AUTH FAILED] {reason}");
+                context.HttpContext.Items["JwtAuthFailedReason"] = reason;
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                var subject = context.Principal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                    ?? context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? "unknown";
+                var role = context.Principal?.FindFirst(ClaimTypes.Role)?.Value ?? "no-role";
+
+                Console.WriteLine($"[JWT VALID] sub={subject}, role={role}");
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                if (!context.Response.HasStarted &&
+                    context.HttpContext.Items.TryGetValue("JwtAuthFailedReason", out var reasonObj) &&
+                    reasonObj is string reason &&
+                    !string.IsNullOrWhiteSpace(reason))
+                {
+                    context.Response.Headers["X-JWT-Error"] = reason;
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 

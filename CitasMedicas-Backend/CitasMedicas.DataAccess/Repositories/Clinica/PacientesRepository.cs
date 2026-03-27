@@ -29,6 +29,31 @@ namespace CitasMedicas.DataAccess.Repositories.Clinica
             );
         }
 
+        public virtual PacientesDTO? ObtenerPorUsuarioId(int usuarioId)
+        {
+            using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
+
+            const string sql = @"
+                SELECT TOP 1
+                    p.PacienteId,
+                    p.UsuarioId,
+                    p.Nombres,
+                    p.Apellidos,
+                    p.Telefono,
+                    p.Correo,
+                    p.FechaNacimiento,
+                    p.NumeroIdentidad,
+                    p.Activo,
+                    p.FechaCreacion,
+                    CONCAT(p.Nombres, ' ', p.Apellidos) AS Paciente
+                FROM Clinica.tbPacientes p
+                WHERE p.UsuarioId = @UsuarioId
+                ORDER BY p.PacienteId DESC
+            ";
+
+            return db.QueryFirstOrDefault<PacientesDTO>(sql, new { UsuarioId = usuarioId });
+        }
+
         public virtual RequestStatus PacienteInsertar(PacientesDTO paciente)
         {
             using var db = new SqlConnection(CitasMedicasContext.ConnectionString);
