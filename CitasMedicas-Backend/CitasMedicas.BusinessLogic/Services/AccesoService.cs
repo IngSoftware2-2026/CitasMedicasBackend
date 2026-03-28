@@ -1,6 +1,7 @@
 using CitasMedicas.BusinessLogic.Configuration;
 using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
+using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,11 +14,13 @@ namespace CitasMedicas.BusinessLogic.Services
     {
         private readonly IAuthRepository _authRepository;
         private readonly IUserRepository _userRepository;
+        private readonly PacientesRepository _pacientesRepository;
 
-        public AccesoService(IAuthRepository authRepository, IUserRepository userRepository)
+        public AccesoService(IAuthRepository authRepository, IUserRepository userRepository, PacientesRepository pacientesRepository)
         {
             _authRepository = authRepository;
             _userRepository = userRepository;
+            _pacientesRepository = pacientesRepository;
         }
 
         #region Login
@@ -151,6 +154,88 @@ namespace CitasMedicas.BusinessLogic.Services
         public ServiceResult UsuariosEliminar(int usuarioId)
             => usuarioId > 0 ? MapRequestStatusToServiceResult(_userRepository.Eliminar(usuarioId))
                             : new ServiceResult().BadRequest("El id del usuario es requerido");
+        #endregion
+
+        #region Registro Paciente
+        public ServiceResult RegistroPaciente(RegistroPacienteDTO registro)
+        {
+            if (registro == null)
+                return new ServiceResult().BadRequest("Los datos de registro son requeridos");
+
+            if (string.IsNullOrWhiteSpace(registro.NombreUsuario))
+                return new ServiceResult().BadRequest("El nombre de usuario es requerido");
+
+            if (string.IsNullOrWhiteSpace(registro.Clave) || registro.Clave.Length < 6)
+                return new ServiceResult().BadRequest("La contraseña debe tener al menos 6 caracteres");
+
+            if (string.IsNullOrWhiteSpace(registro.Correo))
+                return new ServiceResult().BadRequest("El correo es requerido");
+
+            if (string.IsNullOrWhiteSpace(registro.Nombres))
+                return new ServiceResult().BadRequest("Los nombres son requeridos");
+
+            if (string.IsNullOrWhiteSpace(registro.Apellidos))
+                return new ServiceResult().BadRequest("Los apellidos son requeridos");
+
+            if (string.IsNullOrWhiteSpace(registro.NumeroIdentidad))
+                return new ServiceResult().BadRequest("El número de identidad es requerido");
+
+            return Execute(() =>
+            {
+                // Obtener el rolId de PACIENTE
+                var roles = _authRepository.Listar();
+                var rolPaciente = roles.FirstOrDefault(r => r.CodigoRol == "PACIENTE");
+                if (rolPaciente == null)
+                    return new ServiceResult().Error("No se encontró el rol de paciente en el sistema");
+
+                // 1. Crear usuario inactivo con rol PACIENTE
+                var usuario = new UsuariosDTO
+                {
+                    NombreUsuario = registro.NombreUsuario.Trim(),
+                    Correo = registro.Correo.Trim(),
+                    Telefono = registro.Telefono?.Trim(),
+                    Clave = registro.Clave,
+                    RolId = rolPaciente.RolId,
+                    Activo = false // Necesita aprobación del admin
+                };
+
+                var resultadoUsuario = _userRepository.Insertar(usuario);
+                if (resultadoUsuario.CodeStatus != 1)
+                    return new ServiceResult().Conflict(resultadoUsuario.MessageStatus, resultadoUsuario);
+
+                // 2. Obtener el usuario recién creado para tener su ID
+                var usuarios = _userRepository.Listar();
+                var usuarioCreado = usuarios
+                    .Where(u => u.NombreUsuario == registro.NombreUsuario.Trim())
+                    .OrderByDescending(u => u.UsuarioId)
+                    .FirstOrDefault();
+
+                if (usuarioCreado == null)
+                    return new ServiceResult().Error("El usuario fue creado pero no se pudo recuperar");
+
+                // 3. Crear registro de paciente vinculado al usuario
+                var paciente = new PacientesDTO
+                {
+                    UsuarioId = usuarioCreado.UsuarioId,
+                    Nombres = registro.Nombres.Trim(),
+                    Apellidos = registro.Apellidos.Trim(),
+                    Telefono = registro.Telefono?.Trim() ?? "",
+                    Correo = registro.Correo.Trim(),
+                    NumeroIdentidad = registro.NumeroIdentidad.Trim(),
+                    FechaNacimiento = registro.FechaNacimiento,
+                    Activo = true
+                };
+
+                var resultadoPaciente = _pacientesRepository.PacienteInsertar(paciente);
+                if (resultadoPaciente.CodeStatus != 1)
+                    return new ServiceResult().Conflict(resultadoPaciente.MessageStatus, resultadoPaciente);
+
+                return new ServiceResult().Ok(
+                    "Registro exitoso. Tu cuenta será activada por un administrador.",
+                    new { UsuarioId = usuarioCreado.UsuarioId, NombreUsuario = usuarioCreado.NombreUsuario }
+                );
+            });
+        }
         #endregion
 
         #region Helpers

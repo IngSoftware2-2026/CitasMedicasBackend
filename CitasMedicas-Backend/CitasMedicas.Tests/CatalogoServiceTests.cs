@@ -15,7 +15,7 @@ namespace CitasMedicas.Tests
         public CatalogoServiceTests()
         {
             _mockEspecialidadesRepository = new Mock<IEspecialidadesRepository>();
-            _service = new CatalogoService(_mockEspecialidadesRepository.Object);
+            _service = new CatalogoService(null!, null!, null!);
         }
 
         [Fact]

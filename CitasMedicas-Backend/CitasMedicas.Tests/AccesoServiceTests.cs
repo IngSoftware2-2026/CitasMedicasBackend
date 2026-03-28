@@ -2,6 +2,7 @@ using CitasMedicas.BusinessLogic;
 using CitasMedicas.BusinessLogic.Services;
 using CitasMedicas.DataAccess;
 using CitasMedicas.DataAccess.Repositories.Accesos;
+using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using Moq;
 
@@ -17,7 +18,8 @@ namespace CitasMedicas.Tests
         {
             _mockAuthRepository = new Mock<IAuthRepository>();
             _mockUserRepository = new Mock<IUserRepository>();
-            _service = new AccesoService(_mockAuthRepository.Object, _mockUserRepository.Object);
+            var pacientesRepo = new PacientesRepository();
+            _service = new AccesoService(_mockAuthRepository.Object, _mockUserRepository.Object, pacientesRepo);
         }
 
         [Fact]
