@@ -2,6 +2,7 @@ using CitasMedicas.BusinessLogic;
 using CitasMedicas.BusinessLogic.Configuration;
 using CitasMedicas.BusinessLogic.Services;
 using CitasMedicas.DataAccess.Repositories.Accesos;
+using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -32,7 +33,8 @@ namespace CitasMedicas.Tests.Services
                 .Build();
 
             JwtSettings.Initialize(config);
-            _service = new AccesoService(_mockAuthRepo.Object, _mockUserRepo.Object);
+            var pacientesRepo = new PacientesRepository();
+            _service = new AccesoService(_mockAuthRepo.Object, _mockUserRepo.Object, pacientesRepo);
         }
 
         public void Dispose() { }

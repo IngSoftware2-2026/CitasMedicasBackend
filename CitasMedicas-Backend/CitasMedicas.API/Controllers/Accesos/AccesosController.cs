@@ -23,6 +23,13 @@ namespace CitasMedicas.API.Controllers.Accesos
             return StatusCode(result.Code, result);
         }
 
+        [HttpPost("RegistroPaciente")]
+        public IActionResult RegistroPaciente([FromBody] RegistroPacienteDTO registro)
+        {
+            var result = _accesoService.RegistroPaciente(registro);
+            return StatusCode(result.Code, result);
+        }
+
 
         #region Roles
         [HttpGet("Roles/Listar")]
