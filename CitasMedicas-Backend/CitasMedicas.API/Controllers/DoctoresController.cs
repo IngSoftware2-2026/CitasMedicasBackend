@@ -1,4 +1,5 @@
 using CitasMedicas.BusinessLogic;
+using CitasMedicas.DataAccess.Repositories.Accesos;
 using CitasMedicas.DataAccess.Repositories.Clinica;
 using CitasMedicas.Models.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,8 @@ namespace CitasMedicas.API.Controllers
     public class DoctoresController : ControllerBase
     {
         private readonly DoctoresRepository _repo = new DoctoresRepository();
+        private readonly UserRepository _userRepo = new UserRepository();
+        private readonly HorariosDoctorRepository _horariosRepo = new HorariosDoctorRepository();
 
         [HttpGet]
         public IActionResult ObtenerDoctores(bool? activo, int? especialidadId)
@@ -23,6 +26,36 @@ namespace CitasMedicas.API.Controllers
         public IActionResult Listar(bool? activo, int? especialidadId)
         {
             var result = new ServiceResult().Ok(_repo.Listar(activo, especialidadId));
+            return StatusCode(result.Code, result);
+        }
+
+        [HttpGet("~/Doctores/ListarOperativos")]
+        public IActionResult ListarOperativos()
+        {
+            var doctores = _repo.Listar(true, null).ToList();
+            var duplicados = doctores
+                .GroupBy(d => d.UsuarioId)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToHashSet();
+
+            var operativos = doctores.Where(d =>
+            {
+                var usuario = _userRepo.ObtenerPorId(d.UsuarioId);
+                if (usuario == null || usuario.Activo != true || (usuario.RolId ?? 0) != 2)
+                    return false;
+
+                if (duplicados.Contains(d.UsuarioId))
+                    return false;
+
+                if (string.IsNullOrWhiteSpace(d.NombreEspecialidad))
+                    return false;
+
+                var horarios = _horariosRepo.ObtenerHorarios(d.MedicoId);
+                return horarios.Any(h => h.Activo);
+            }).ToList();
+
+            var result = new ServiceResult().Ok(operativos);
             return StatusCode(result.Code, result);
         }
 
@@ -44,9 +77,30 @@ namespace CitasMedicas.API.Controllers
             return Ok();
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult EliminarDoctor(int id)
+        {
+            _repo.CambiarActivo(id, false);
+            return Ok(new { message = "Doctor desactivado correctamente." });
+        }
+
         [HttpPost]
         public IActionResult CrearDoctor([FromBody] DoctoresDTO doctor)
         {
+            if (doctor.UsuarioId <= 0)
+                return BadRequest(new { message = "Debe seleccionar un usuario valido para vincular al doctor." });
+
+            var usuario = _userRepo.ObtenerPorId(doctor.UsuarioId);
+            if (usuario == null)
+                return BadRequest(new { message = "El usuario seleccionado no existe." });
+
+            if ((usuario.RolId ?? 0) != 2)
+                return BadRequest(new { message = "El usuario seleccionado no tiene rol DOCTOR." });
+
+            var doctorExistente = _repo.Listar(null, null).FirstOrDefault(d => d.UsuarioId == doctor.UsuarioId);
+            if (doctorExistente != null)
+                return Conflict(new { message = "El usuario seleccionado ya esta vinculado a otro doctor." });
+
             var newId = _repo.Crear(doctor);
             return Ok(new { medicoId = newId });
         }

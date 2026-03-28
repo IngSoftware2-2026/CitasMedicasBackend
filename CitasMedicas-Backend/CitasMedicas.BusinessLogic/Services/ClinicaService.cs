@@ -15,14 +15,21 @@ namespace CitasMedicas.BusinessLogic.Services
         private readonly PropuestasReprogramacionRepository _propuestasReprogramacionRepository;
         private readonly CitasRepository _citasRepository;
         private readonly PacientesRepository _pacientesRepository;
+        private readonly DoctoresRepository _doctoresRepository;
 
         
-        public ClinicaService(PropuestasReprogramacionRepository propuestasReprogramacionRepository, SolicitudesRepository solicitudesRepository, CitasRepository citasRepository, PacientesRepository pacientesRepository)
+        public ClinicaService(
+            PropuestasReprogramacionRepository propuestasReprogramacionRepository,
+            SolicitudesRepository solicitudesRepository,
+            CitasRepository citasRepository,
+            PacientesRepository pacientesRepository,
+            DoctoresRepository doctoresRepository)
         {
             _solicitudesRepository = solicitudesRepository;
             _propuestasReprogramacionRepository = propuestasReprogramacionRepository;
             _citasRepository = citasRepository;
             _pacientesRepository = pacientesRepository;
+            _doctoresRepository = doctoresRepository;
         }
 
         #region Método genérico de mapeo
@@ -482,6 +489,28 @@ namespace CitasMedicas.BusinessLogic.Services
             catch (Exception ex)
             {
                 return new ServiceResult().Error($"Error inesperado al obtener paciente por usuario: {ex.Message}");
+            }
+        }
+
+        public ServiceResult ObtenerDoctorPorUsuarioId(int usuarioId)
+        {
+            if (usuarioId <= 0)
+                return new ServiceResult().BadRequest("El id del usuario debe ser mayor que cero.");
+
+            try
+            {
+                var doctor = _doctoresRepository
+                    .Listar(null, null)
+                    .FirstOrDefault(d => d.UsuarioId == usuarioId || d.MedicoUsuarioId == usuarioId);
+
+                if (doctor == null)
+                    return new ServiceResult().NotFound("Doctor no encontrado para el usuario autenticado.");
+
+                return new ServiceResult().Ok(doctor);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult().Error($"Error inesperado al obtener doctor por usuario: {ex.Message}");
             }
         }
 
